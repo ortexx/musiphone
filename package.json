@@ -1,6 +1,6 @@
 {
   "name": "musiphone",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
@@ -14,7 +14,9 @@
   "scripts": {
     "eslint": "eslint src bin test",
     "test": "mocha ./test/index.js --timeout=10000",
-    "cordova-init": "cross-env-shell \"if [ ! -d './platforms/android' ]; then cordova platform add android; fi\"",
+    "cordova-init-www": "cross-env ln -s ./dist/face ./www",
+    "cordova-init-platforms": "cross-env-shell \"if [ ! -d './platforms/android' ]; then cordova platform add android; fi\"",    
+    "cordova-init": "npm run cordova-init-www && npm run cordova-init-platforms", 
     "build-client": "webpack --config=webpack.client.js",
     "build-client-prod": "cross-env NODE_ENV=production webpack --config=webpack.client.js",
     "build-face": "webpack --config=webpack.face.js",
