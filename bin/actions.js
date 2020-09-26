@@ -7,7 +7,7 @@ const actions = Object.assign({}, require('metastocle/bin/actions'));
  * Add the playlist
  */
 actions.addPlaylist = async node => {
-  let content = argv.content || argv.d;
+  let content = argv.content || argv.s;
   const title = argv.title || argv.t;
 
   try {

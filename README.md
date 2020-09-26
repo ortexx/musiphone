@@ -1,4 +1,4 @@
-# [Musiphone](https://github.com/ortexx/musiphone/) [alpha] 
+# [Musiphone](https://github.com/ortexx/musiphone/) [alpha] [![npm version](https://badge.fury.io/js/musiphone.svg)](https://badge.fury.io/js/musiphone)
 
 Musiphone is a decentralized music player based on [the museria project](https://github.com/ortexx/museria/).
 
@@ -68,7 +68,7 @@ To get an android application, you have to install all the necessary dependencie
 All the necessary scripts you can find in the project [package.json](https://github.com/ortexx/musiphone/blob/master/package.json).
 The only required option is an API address. It is necessary for the application to know where to connect for working. You can pass  __MUSIPHONE_API_ADDRESS__ environment variable. The value can be  any musiphone node address in your network:
 
-`MUSIPHONE_API_ADDRESS=192.168.0.100:2790 npm run build-mobile`.
+`MUSIPHONE_API_ADDRESS=192.168.0.100:2790 npm run make-mobile`.
 
 or several addresses separated by comma:
 
@@ -76,10 +76,10 @@ or several addresses separated by comma:
 
 or the path to a js/json file:
 
-`MUSIPHONE_API_ADDRESS=./faces.json npm run build-mobile-prod`.
+`MUSIPHONE_API_ADDRESS=./faces.json npm run make-mobile-prod`.
 
 You can build it directly to your phone with __run-mobile-device__. 
-To get an apk file for installation use __build-mobile__ for the debug version or __build-mobile-prod__ for production ready one. The debug version you can install on the phone, but can't distribute to the markets. The production version is unsigned. To use it somewhere you have to sign it at first.
+To get an apk file for installation use __make-mobile__ for the debug version or __make-mobile-prod__ for production ready one. The debug version you can install on the phone, but can't distribute to the markets. The production version is unsigned. To use it somewhere you have to sign it at first.
 
 ## What are the limitations
 The maximum size of a single playlist is 100 kb, by default. You can change it using the __playlist.maxSize__ option.
@@ -109,7 +109,7 @@ async __Client.prototype.getStorageAddress()__ - get the music storage address.
 
 async __Client.prototype.addPlaylist()__ - add the playlist to the network.
   * {string} __[title]__ - playlist title
-  * {string[]} __[content]__ - array with song titles to save
+  * {string[]} __content__ - array with song titles to save
   * {object} __[options]__ - addition options
   * {number} __[options.timeout]__ - addition timeout
 

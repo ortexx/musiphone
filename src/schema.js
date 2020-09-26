@@ -7,7 +7,8 @@ schema.getPlaylist = function () {
   return {
     type: 'array',
     uniq: true,
-    items: {
+    minLength: 1,
+    items: {      
       type: 'string',
       value: maUtils.isSongTitle.bind(maUtils)
     }
