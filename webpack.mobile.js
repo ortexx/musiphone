@@ -14,7 +14,7 @@ module.exports = (options = {}, wp = null, onlyMerge = false) => {
   if(!apiAddress) {
     throw new Error('You have to pass an API address to build for mobile.');
   }
-
+  
   typeof apiAddress == 'string' && (apiAddress = apiAddress.split(','));
   const plugins = [new webpack.DefinePlugin({ API_ADDRESS: JSON.stringify(apiAddress) })];
   options = { plugins };
