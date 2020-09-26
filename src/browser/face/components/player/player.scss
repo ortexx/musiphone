@@ -1,0 +1,210 @@
+@import '../../styles/vars';
+@import '~bootstrap/scss/bootstrap-grid';
+
+.player {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: rgba(darken($dark, 10%), 0.9);
+  z-index: 100;
+
+  &-content {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+  }
+
+  &-image {
+    $width: 4.5em;
+    $height: 4.5em;    
+    position: relative; 
+    width: $width; 
+    height: $height;
+    background: darken($dark, 5%);
+  
+    & > i {
+      color: $gray;
+      font-size: 1.6em;
+      opacity: 0.5;
+      position: absolute; 
+      left: 47%; 
+      top: 50%;
+      transform: translate(-50%, -50%); 
+      z-index: 0;
+    }
+  
+    & > *:not(i) {
+      width: $width; 
+      height: $height; 
+      background-size: cover !important;
+      background-position: center center !important;
+      position: absolute;
+      z-index: 1;
+    }
+  }
+
+  &-progress {
+    $min-height: 0.5em;
+    font-size: 0.9em;
+    position: relative;
+    background: rgba($dark, 0.9);
+    min-height: $min-height;    
+    cursor: pointer;
+    font-weight: bold; 
+
+    &-title {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 90%;
+      margin-top: -1px;
+    }
+
+    &-mask {
+      opacity: 0;
+    }
+    
+    &-actual {
+      background: rgba($red, 0.9);
+      min-height: $min-height;
+    }
+
+    &-buffer {
+      background: rgba(lighten($dark, 10%), 0.9);
+      min-height: $min-height;
+    }
+  }
+
+  &-buttons {
+    line-height: 1;
+    flex-grow: 1;
+
+    & > * {
+      display: inline-block;
+      line-height: 1;
+
+      &:not(:last-child) {
+        margin-right: 0.6em;
+      }
+    }
+
+    a {
+      position: relative;
+      color: $gray;
+      font-size: 1.12em;
+      background: black;
+      width: 1.89em;
+      height: 1.89em;
+      border-radius: 50%;
+      display: inline-block;
+
+      & > i {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        left: 50%;
+        top: 50%;
+
+        &.fa-play {
+          left: 53%;
+        }
+
+        &.fa-forward {
+          left: 53%;
+        }
+
+        &.fa-backward {
+          left: 47%;
+        }
+
+        &.fa-spinner {
+          left: 23%;
+          top: 23%
+        }
+      }
+
+      &:hover {
+        color: $blue;
+      }
+
+      &.active {
+        color: $blue;
+      }
+
+      &.active:hover {
+        color: $midnight;
+      }
+    }
+  }
+
+  &-volume {
+    position: relative;
+    $size: 0.8em;
+  
+    & input[type='range'] { 
+      @mixin range-thumb {    
+        width: $size;
+        height: $size;
+        cursor: pointer;
+        border-radius: 0;
+        border: none;
+        opacity: 0;
+      }
+    
+      -webkit-appearance: none; 
+      width: 100%;
+      height: $size;
+      background: rgba($gray, 0.4);
+      outline: none;
+      cursor: pointer;
+    
+      &::-ms-track {
+        width: 100%;
+        cursor: pointer;  
+        background: transparent; 
+        border-color: transparent;
+        color: transparent;
+      }
+    
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        @include range-thumb;
+      }
+  
+      &::-moz-range-track {
+        height: $size;
+        background: rgba($gray, 0.4);
+      }
+    
+      &::-moz-range-thumb {
+        @include range-thumb;
+      }
+    
+      input[type=range]::-ms-thumb {
+        @include range-thumb;
+      }
+    }
+  
+    & :not(input) {
+      position: absolute; 
+      left: 0; 
+      top: 0;    
+      background: rgba($blue, 0.7); 
+      height: $size; 
+      pointer-events: none;
+    }
+  }
+
+  &-close {
+    & a {
+      opacity: 0.5;
+      color: $gray;
+      font-size: 1.5em;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+    
+  }
+}

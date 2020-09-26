@@ -1,0 +1,302 @@
+<div class="app container-fluid">
+  <modal-window 
+    body-class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 ${ this.event.type }"
+    is-open="${ this.event.isActive }"
+    on-is-open="${ this.changeEventActivity(event.detail) }"
+    z-index="20000"
+  >
+    ${ this.event.message }
+    <div hidden="${ !this.event.confirm }" class="row mt-3">
+      <div class="col-6">
+        <button 
+          type="submit" 
+          class="btn btn-primary form-control"
+          on-click="${ this.event.onYes(); }"
+        >
+          Yes
+        </button>
+      </div>
+      <div class="col-6">
+        <button 
+          type="submit" 
+          class="btn btn-secondary form-control"
+          on-click="${this.event.onNo(); }"
+        >
+          No
+        </button>
+      </div>
+    </div>
+  </modal-window> 
+  <menu data="${ this.menu }" is-open="${ this.menuModal }" on-is-open="${ this.menuModal = event.detail }"></menu>
+  <input 
+    type="file"
+    id="load-config"
+    class="hidden-file"
+    on-change="${ this.importConfig(event.target.files[0]) }"
+    accept="application/json"
+  >
+  <header class="header row p-4 align-items-center">
+    <div class="col-10 col-md-4 col-xl-2 p-0">
+      <a state="app" class="logo">  
+        <img src="./img/logo.svg" class="logo-img">
+        <div>
+          <div class="logo-title">musiphone</div>
+          <div class="logo-description">decentralized music player</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-2 col-md-8 col-xl-10 p-0 pl-4 text-right">
+      <div class="d-flex flex-row-reverse align-items-center">
+        <a 
+          href="javascript:;" 
+          on-click="${ this.menuModal = !this.menuModal }" 
+          class="menu-icon d-block d-lg-none"
+        >
+          <i class="fas fa-bars "></i>
+        </a>
+        <div class="d-none d-md-block">
+          <ul in="${ this.menu }" class="menu pt-1">
+            <li class="${ this.loopIndex > 1? 'd-none d-lg-block': '' }">          
+              <a 
+                on-click="${ this.loopValue.handler && this.loopValue.handler() }"
+                href="${ this.loopValue.href || 'javascript:;' }" 
+                target="${ this.loopValue.blank? '_blank': '' }"
+              >
+                <i class="${ this.loopValue.icon }" aria-hidden="true"></i>
+                ${ this.loopValue.text }
+              </a>
+            </li>           
+          </ul> 
+        </div>
+      </div>
+    </div> 
+  </header>
+  <div class="content">
+    <if is="${ !this.wrongPlaylistHash }">
+      <div class="row">
+        <div class="song-search col-lg-6 col-12 px-4 pt-0 pt-lg-3">
+          <div class="song-search-input input-group input-group-lg">
+            <i class="fas fa-search fa-lg"></i>
+            <input 
+              type="text" 
+              class="form-control"
+              placeholder="Artist - Title"
+              debounce="2000"
+              value="${ this.searchInputValue }"
+              on-debounce="${ this.searchInputValue = event.target.value; this.findSong() }"
+            />
+          </div>
+        </div>
+        <div class="col-lg-6 col-12 px-4 pt-3 pt-lg-0 pt-lg-3">
+          <div class="position-relative" hidden="${ this.searchEvent.status }">
+            <div class="row">
+              <div class="col-6 pr-2">
+                <button 
+                  disabled="${ !this.activePlaylist || !this.activePlaylist.songs.length }"
+                  class="btn form-control btn-lg btn-primary" 
+                  on-click="${ this.newPlaylist() }"
+                > 
+                  new playlist
+                </button>
+              </div>  
+              <div class="col-6 pl-2">
+                <modal-window 
+                  body-class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4"
+                  is-open="${ this.loadPlaylistModal }"
+                  on-is-open="${ this.loadPlaylistModal = event.detail }"
+                >    
+                  <form 
+                    class="playlist-load"
+                    on-submit="${ event.preventDefault(); this.loadPlaylistLink(); }"
+                  >                
+                    <div class="form-group w-100 mt-3">
+                      <input 
+                        type="text"
+                        class="form-control"
+                        focus="${ this.loadPlaylistModal }"
+                        value="${ this.loadPlaylistInputValue }"
+                        on-input="${ this.loadPlaylistInputValue = event.target.value; }"
+                        placeholder="enter a playlist link"
+                      />
+                    </div> 
+                    <button 
+                      type="submit"
+                      class="btn form-control btn-primary"
+                    >
+                      Confirm
+                    </button>  
+                    <div class="playlist-load-or my-3">or</div>
+                    <button 
+                      type="button"
+                      class="btn form-control btn-lg btn-primary"
+                      on-click="${ this.chooseLoadingFile(); }"
+                    > 
+                      load from file
+                    </button>
+                  </form>   
+                </modal-window>
+                <button 
+                  class="btn form-control btn-lg btn-primary"
+                  on-click="${ this.loadPlaylistModal = true }"
+                > 
+                  load playlist
+                </button>  
+                <input 
+                  type="file"
+                  id="load-file"
+                  class="hidden-file" 
+                  on-change="${ this.loadFile(event.target.files[0]) }"
+                  accept="audio/x-mpegurl"
+                >
+              </div>
+            </div>
+          </div>
+          <if is="${ this.searchEvent.status }">
+            <if 
+              recreate
+              is="${ this.searchEvent.status != 'success'}" 
+              class="d-block search-alert alert alert-${ this.searchEvent.status }"
+            >  
+              ${ this.searchEvent.message }  
+              <button 
+                type="button" 
+                class="close" 
+                data-dismiss="alert" 
+                aria-label="Close" 
+                on-click="${ this.resetSearchEvent(); this.searchInputValue = '';  this.searchInputFocus = true; }"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </if>
+            <else>               
+              <song-card 
+                info="${ this.searchEvent.meta }"
+                buttons="${ { cache: false } }"
+                on-click="${ this.selectFoundSong(this.loopValue) }"
+                on-add="${ this.addSong() }"
+                on-remove="${ this.resetSearchEvent(); this.searchInputValue = ''; this.searchInputFocus = true }"
+              ></song-card>
+            </else>
+          </if> 
+        </div>   
+      </div>
+      <if is="${ this.activePlaylist && this.activePlaylist.songs.length }" class="row">
+        <div class="col-12 col-lg-6 px-4 pt-3 order-2 order-lg-1">          
+          <if 
+            is="${ !this.activePlaylist.link }" 
+            class="playlist-alert d-block alert alert-warn"
+          >   
+            There are some changes in the playlist. Save it to the web to get a link. 
+          </if>
+          <else class="playlist-alert d-block alert alert-success ${ this.linkIsBlinking? 'playlist-alert--blinking': '' }"> 
+            <a 
+              hidden="${ !window.cordova }"
+              href="javascript:;" 
+              class="playlist-alert-share playlist-alert-btn"
+              on-click="${ this.sharePlaylistLink() }"
+            >
+              <i class="fas fa-share-alt"></i>
+            </a>
+            <a 
+              href="javascript:;" 
+              class="playlist-alert-copy playlist-alert-btn" 
+              on-click="${ this.copyPlaylistLink() }"
+            >
+              <i class="fas fa-copy"></i> 
+            </a>  
+            <a href="${ this.activePlaylist.link }" target="_blank">              
+              ${ this.activePlaylist.link }  
+            </a>
+          </else>
+        </div> 
+        <div class="col-12 col-lg-6 px-4 pt-3 order-1 order-lg-2">
+          <div class="row">
+            <div class="col-6 pr-2">
+              <modal-window 
+                body-class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4"
+                is-open="${ this.saveToWebModal }"
+                on-is-open="${ this.saveToWebModal = event.detail }"
+              >    
+                <form 
+                  class="playlist-save"
+                  on-submit="${ event.preventDefault(); this.savePlaylist(); }"
+                >                
+                  <div class="form-group w-100 mt-3">
+                    <input 
+                      type="text"
+                      class="form-control"
+                      focus="${ this.saveToWebModal }"
+                      value="${ this.saveToWebTitle }"
+                      on-input="${ this.saveToWebTitle = event.target.value; }"
+                      placeholder="enter a title"
+                    />
+                  </div> 
+                  <button 
+                    type="submit"
+                    class="btn form-control btn-secondary"
+                  >
+                    Confirm
+                  </button>  
+                </form>   
+              </modal-window>
+              <button class="btn form-control btn-lg btn-secondary" on-click="${ this.saveToWebModal = true }">         
+                Save to web
+              </button>
+            </div>  
+            <div class="col-6 pl-2">
+              <button class="btn form-control btn-lg btn-secondary" on-click="${ this.saveFile() }"> 
+                Save to file
+              </button>  
+            </div>   
+          </div>
+        </div>        
+      </if>
+      <if is="${ this.playlists.length }" class="row">
+        <div class="col-12 px-4 pt-4">
+          <playlists 
+            data="${ this.playlists }"
+            highlight="${ this.activePlaylist? !!this.activePlaylist.link: false }"
+            on-select="${ this.selectPlaylist(event.detail) }"
+          >
+          </playlists>
+        </div>
+      </if>
+      <if is="${ this.activePlaylist && this.activePlaylist.songs.length }" class="row">
+        <div class="col-12 px-4 py-3">
+          <playlist data="${ this.activePlaylist }" on-sort="${ this.changePlaylistOrder(event.detail) }"></playlist>
+        </div>
+      </if>
+      <if  is="${ !this.activePlaylist || !this.activePlaylist.songs.length }" class="row playlist-hints">
+        <div class="col-12 col-sm-11 col-md-10 col-lg-9 col-xl-8 px-4 py-4 my-4 mx-auto">
+          <div class="d-flex flex-column flex-lg-row align-items-center">
+            <div class="text-center">
+              <img src="./img/hint.svg" class="playlist-hints-img">
+            </div>            
+            <span class="playlist-hints-text py-4 px-2 px-lg-0 pl-lg-4">
+              You have an empty playlist. To fill it you need to look for a song in the input. 
+              If the desired song is found, then a new section will appear and you can click the plus button to add it to the playlist.
+              If the song is not there, then you can upload it to the <a href="${ this.storageUrl }" target="_blank">music storage</a> yourself.
+              After collecting the songs you can save the playlist to the web. The most recently saved playlists are displayed above. 
+              The web link can be shared with your friends, but it can get inactive after some time. 
+              To have guaranteed access to your playlists you can save them to files. 
+            </span>
+          </div>         
+        </div>
+      </if>
+    </if>
+    <if is="${ this.wrongPlaylistHash }" class="d-block search-alert alert alert-danger">
+      There is no playlist with that hash
+      <a state="app">
+        <button 
+          type="button" 
+          class="close"
+          data-dismiss="alert" 
+          aria-label="Close" 
+          on-click="${ this.resetSearchEvent(); this.searchInputValue = '';  this.searchInputFocus = true; }"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </a>      
+    </if>
+  </div>  
+</div>

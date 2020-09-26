@@ -1,0 +1,18 @@
+<if recreate is="${ this.isOpen }">
+  <div class="modal-window">
+    <div 
+      class="modal-window-overlay container-fluid d-flex justify-content-center align-items-center"
+      on-mousedown="${ this.isOpen = false; }"
+      style="z-index: ${ this.zIndex }"
+    >
+      <div class="row w-100 justify-content-center align-items-center">
+        <scrollbar class="${ this.bodyClass } modal-window-scrollbar" on-mousedown="${ event.stopPropagation() }">
+          <i class="modal-window-close fas fa-times fa-3x" on-click="${ this.isOpen = false }"></i>
+          <div class="modal-window-body">
+            ${ this.__content }
+          </div>
+        </scrollbar>
+      </div>
+    </div>
+  </div>
+</if>

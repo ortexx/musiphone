@@ -1,0 +1,11 @@
+<ul in="${ this.data.songs }" chunks="200" class="playlist">
+  <li class="playlist-song">
+    <song-card 
+      info="${ this.loopValue }" 
+      buttons="${ { add: false, cache: !this.loopValue.isCacheSaving, cacheLoading: this.loopValue.isCacheSaving } }"
+      on-click="${ this.selectSong(this.loopValue) }"
+      on-remove="${ this.removeSong(this.loopValue.title) }"
+      on-cache="${ this.toggleCache(this.loopValue) }"
+    ></song-card>
+  </li>
+</ul>

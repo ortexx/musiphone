@@ -1,0 +1,11 @@
+{
+  "globals": {
+    "API_ADDRESS": true,
+    "device": true,
+    "cordova": true,    
+    "workStorage": true,
+    "Media": true,
+    "FileTransfer": true,
+    "MusicControls": true
+  }
+}

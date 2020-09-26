@@ -1,0 +1,20 @@
+<div class="main-menu d-flex flex-column">
+  <div class="main-menu-top p-4 d-flex align-items-center justify-content-end">
+    <span on-click="${ this.setVisibility(false) }" class="main-menu-close d-inline-block">
+      <i class="fas fa-times fa-3x"></i>
+    </span>    
+  </div>
+  <div class="main-menu-bottom">
+    <ul in="${ this.data }" class="main-menu-list d-flex flex-column">
+      <li class="${ this.loopIndex < 2? 'd-block d-md-none': '' }">          
+        <a 
+          on-click="${ this.loopValue.handler && this.loopValue.handler(); this.loopValue.closeAfter && this.setVisibility(false) }"
+          href="${ this.loopValue.href || 'javascript:;' }" 
+          target="${ this.loopValue.blank? '_blank': '' }"
+        >
+          ${ this.loopValue.text }
+        </a>
+      </li> 
+    </ul>
+  </div>
+</div>

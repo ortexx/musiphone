@@ -1,0 +1,14 @@
+/node_modules
+/dist/android/*
+/plugins/
+/platforms/
+
+*.log
+*.bat
+*.git
+*.suo
+*.sln
+*.swp
+*.swo
+.vscode
+.idea

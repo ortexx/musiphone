@@ -1,0 +1,17 @@
+@import '../../styles/vars.scss';
+
+.tippy-box {
+  opacity: 0.9;
+  background: black;
+  max-width: 90vw;
+}
+
+.tippy-arrow {
+  color: black;
+}
+
+.tippy-content {
+  font-size: 0.9em;
+  overflow-wrap: break-all;
+  padding: 0.8em 1em;
+}

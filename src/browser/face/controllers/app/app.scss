@@ -1,0 +1,172 @@
+@import '../../styles/vars.scss';
+
+.app {
+  display: flex;
+  height: 100%;
+  flex-direction: column;   
+
+  .modal-window-scrollbar.error {
+    box-shadow: 0px 0px 4px 2px rgba($red, 0.8);  
+  }
+  
+  .modal-window-scrollbar.success {
+    box-shadow: 0px 0px 4px 2px rgba($blue, 0.8);
+  }
+
+  .modal-window-scrollbar.warning {
+    box-shadow: 0px 0px 4px 2px rgba($orange, 0.8);
+  }
+
+  & .header {
+    & .logo {
+      display: flex;
+      font-family: ProximaNova;
+      text-transform: uppercase;
+      font-weight: bold;
+      text-decoration: none;
+      align-items: center;      
+
+      &-img {
+        display: inline-block;
+        vertical-align: middle;
+        width: 3.5em;
+        margin: 0 0.5em 0 -0.2em;
+        padding-top: 0.4em;
+      }
+
+      &-title {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 1.95em;
+        color: $red;
+        letter-spacing: 0.02em;    
+      }
+
+      &-description {
+        font-size: 0.72em; 
+        color: $vanilla;
+        letter-spacing: 0.04em;
+        margin-top: -0.6em;
+        margin-left: 0.1em;
+      }
+    }
+
+    & .menu-icon {
+      display: inline-block;
+      font-size: 3.4em;
+      margin-top: 0.12em;
+      color: $vanilla;
+      opacity: 0.5;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    & .menu {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-transform: uppercase;
+      margin-bottom: 0;
+      font-size: 1.1em;
+      font-weight: bold;
+      list-style: none;
+      color: $pale;
+      line-height: 1.5em;
+
+      & > li {
+        &:not(:last-child) {
+          padding-right: 1.9em;
+        }
+
+        &:last-child {          
+          text-align: right;
+        }
+
+        & > a {
+          text-decoration: none;
+          color: inherit;
+
+          &:hover {
+            color: $red;
+          }
+        }
+      }
+    }
+  }
+
+  & .playlist-alert, & .search-alert {
+    font-size: 0.95em;
+    padding: 0.69rem 1.25rem;    
+  }
+
+  & .playlist-alert {
+    transition: all 0.2s ease-in-out;
+    
+    &--blinking {
+      background: black;
+    }
+
+    &-share {
+      color: $red;      
+    }
+
+    &-copy {
+      color: $light;      
+    }
+
+    &-btn {
+      margin-right: 0.6em;
+      opacity: 0.8;
+      text-decoration: none;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  & .playlist-hints {
+    &-img {
+      width: 15em;
+    }
+
+    &-text {
+      text-align: justify;
+      font-size: 0.95em;
+    }
+  }
+
+  & .playlist-load {
+    &-or {
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+      color: $gray;
+    }
+  }
+
+  & .song-search {
+    &-input {
+      position: relative;
+  
+      & > i {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0.7em;
+        color: $light;
+        z-index: 1;
+      }
+    
+      & > input { 
+        padding-left: 2.5em;      
+  
+        &:focus {
+          z-index: 0;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+<div class="song-card">
+  <div class="${ utils.class({ 'card': true, active: this.info.isActive, failed: this.info.isFailed }) }">
+    <div class="d-flex align-items-center">
+      <div class="card-image">
+        <i class="fas fa-music"></i>
+        <div style='background: url("${ this.info.coverLinkCache || this.info.coverLink }")'></div>
+      </div>          
+      <div class="py-1 px-3 card-info">        
+        <div class="ellipsis card-title">  
+          ${ this.info.title }
+        </div>
+      </div>
+      <for 
+        in="${ this.buttons }"
+        class="card-buttons" 
+        on-click="${ event.stopPropagation() }">
+        <a
+          component="loop" 
+          href="javascript:;" 
+          hidden="${ !this.loopValue.status }"
+          class="${ utils.class({ active: this.info.isCached && this.loopValue.name == 'cache', silent: this.loopValue.silent }) }" 
+          on-click="${ event.preventDefault(); !this.loopValue.silent && this.buttonClick(this.loopValue.name) }"
+        >
+          <tooltip message="${ this.loopValue.tooltip }">
+            <i class="fa ${ this.loopValue.icon }"></i>
+          </tooltip>
+        </a>
+      </for>
+    </div>          
+  </div> 
+</div>

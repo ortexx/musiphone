@@ -1,0 +1,15 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2019
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-console": "warn"
+  },
+  "globals": {}
+}

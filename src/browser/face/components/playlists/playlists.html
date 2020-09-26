@@ -1,0 +1,21 @@
+<div class="playlists">
+  <scrollbar on-touchstart="${ event.stopPropagation() }">
+    <ul in="${ this.data }" class="playlists-list">
+      <li 
+        on-click="${ this.selectPlaylist(this.loopValue) }" 
+        class="${ this.loopIndex == 0 && this.highlight? 'active': '' }"
+      >
+        <tooltip message="${ this.loopValue._title }">
+          <span class="ellipsis title">${ this.loopValue._title }</span>
+        </tooltip>        
+        <a
+          class="playlists-remove-btn"
+          href="javascript:;" 
+          on-click="${ event.preventDefault(); event.stopPropagation(); this.removePlaylist(this.loopValue) }"
+        >
+          <i class="fa fa-times"></i>
+        </a>
+      </li>
+    </ul>
+  </scrollbar>
+</div>
