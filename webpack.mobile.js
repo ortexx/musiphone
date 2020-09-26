@@ -12,7 +12,7 @@ module.exports = (options = {}, wp = null, onlyMerge = false) => {
   catch(err) {};
 
   if(!apiAddress) {
-    throw new Error('You have to pass an API address to build for mobile.')
+    throw new Error('You have to pass an API address to build for mobile.');
   }
 
   apiAddress = apiAddress.split(',');
