@@ -156,7 +156,7 @@ export default class App extends Akili.Component {
     
     this.scope.menu.splice(2, 0, {
       text: 'Set address',
-      icon: 'fa fa-arrow-down',
+      icon: 'fa fa-plug',
       handler: () => this.scope.apiAddressModal = true
     });
   }
