@@ -33,16 +33,16 @@ export default class Player extends Akili.Component {
     this.scope.play = this.play.bind(this);
     this.scope.setVolume = this.setVolume.bind(this);
     this.scope.pause = this.pause.bind(this); 
+    this.elFooter = this.el.querySelector('.player-footer'); 
+    this.elPlayer = this.el.querySelector('.player');  
+    this.elAudio = this.el.querySelector('audio');
+    this.elProgress = this.el.querySelector('.player-progress');
   }
 
   compiled() {
     this.store('isPlayerVisible', this.setPlayerVisibility);
-    this.store('activePlaylist', this.handleActivePlaylist);    
+    this.store('activePlaylist', this.handleActivePlaylist); 
     this.store('activeSong', this.changeActiveSong);
-    this.elFooter = this.el.querySelector('.player-footer'); 
-    this.elPlayer = this.el.querySelector('.player');  
-    this.elAudio = this.el.querySelector('audio');  
-    this.elProgress = this.el.querySelector('.player-progress');
     this.elProgress.addEventListener('click', this.setProgress.bind(this));   
     this.elAudio.addEventListener('play', () => this.scope.isPlaying = true);
     this.elAudio.addEventListener('pause', () => this.scope.isPlaying = false);
@@ -250,12 +250,13 @@ export default class Player extends Akili.Component {
 
   async calculatePlayerPosition() {
     if(!store.isPlayerVisible) {
+      this.elFooter.style.height = 0;
       return;
     }
 
     const height = this.elPlayer.getBoundingClientRect().height;
-
-    if(document.body.scrollHeight >= document.body.clientHeight) {
+    
+    if(document.body.scrollHeight + 1 >= document.body.clientHeight) {
       this.elFooter.style.height = height + 'px';
     }
     else {

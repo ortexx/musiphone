@@ -92,6 +92,21 @@ export default class App extends Akili.Component {
     this.scope.selectFoundSong = this.selectFoundSong.bind(this);          
     this.resetSearchEvent();
     this.setMenu();
+  } 
+
+  compiled() {
+    if(this.transition.data) {            
+      store.activePlaylist = utils.copy(addPlaylist(this.transition.data));
+    }
+    else if(this.transition.params.hash === store.activePlaylist.hash) {
+      store.activePlaylist = createPlaylist();
+    }
+
+    this.store('activeSong', this.handleActiveSong);
+    this.store('pageTitle', this.handlePageTitle, { callOnStart: true });    
+    this.store('event', this.handleEvent);
+    this.store('playlists', this.handlePlaylists);
+    this.store('activePlaylist', this.handleActivePlaylist);
   }
 
   selectFoundSong() {
@@ -127,20 +142,8 @@ export default class App extends Akili.Component {
     ];
   }
 
-  compiled() {
-    if(this.transition.data) {            
-      store.activePlaylist = utils.copy(addPlaylist(this.transition.data));
-    }
-
-    this.store('activeSong', this.handleActiveSong);
-    this.store('pageTitle', this.handlePageTitle, { callOnStart: true });    
-    this.store('event', this.handleEvent);
-    this.store('playlists', this.handlePlaylists);
-    this.store('activePlaylist', this.handleActivePlaylist);
-  }
-
   handleActiveSong(song) {
-    if(!this.scope.searchEvent.meta || this.scope.searchEvent.meta.title === song.title) {
+    if(!this.scope.searchEvent.meta || (song && this.scope.searchEvent.meta.title === song.title)) {
       return;
     }
 
