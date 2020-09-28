@@ -10,13 +10,12 @@ module.exports = (options = {}, wp = null, onlyMerge = false) => {
     apiAddress = require(utils.getAbsolutePath(apiAddress));
   }
   catch(err) {};
-
-  if(!apiAddress) {
-    throw new Error('You have to pass an API address to build for mobile.');
+  
+  if(apiAddress) {
+    typeof apiAddress == 'string' && (apiAddress = apiAddress.split(','));
+    const plugins = [new webpack.DefinePlugin({ API_ADDRESS: JSON.stringify(apiAddress) })];
+    options = { plugins };
   }
   
-  typeof apiAddress == 'string' && (apiAddress = apiAddress.split(','));
-  const plugins = [new webpack.DefinePlugin({ API_ADDRESS: JSON.stringify(apiAddress) })];
-  options = { plugins };
   return onlyMerge? options: config(options);
 }

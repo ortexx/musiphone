@@ -11,7 +11,7 @@ import Playlists from './components/playlists/playlists';
 import Scrollbar from './components/scrollbar/scrollbar';
 import Tooltip from './components/tooltip/tooltip';
 import ModalWindow from './components/modal-window/modal-window';
-import { initClients, removeMobileHovers, initDataStorage } from './lib/system';
+import { initClients, removeMobileHovers, initDataStorage, setClientInitialAddress } from './lib/system';
 import { preparePlaylistsToImport, preparePlaylistToImport, getActivePlaylist } from './lib/playlists';
 import network, { handleDeepLinks, listenConnectionStatus } from './lib/network';
 import { setCache, cleanUpCache } from './lib/cache';
@@ -48,7 +48,8 @@ document.addEventListener(window.cordova? 'deviceready': 'DOMContentLoaded', asy
     await initDatabase();
     await setCache();
     await cleanUpCache();
-    network.connection && await initClients();
+    const address = await setClientInitialAddress();        
+    network.connection && address && await initClients();
     await Akili.init();
 
     if(window.cordova) {

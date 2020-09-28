@@ -1,6 +1,6 @@
 {
   "name": "musiphone",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
@@ -14,6 +14,9 @@
   "scripts": {
     "eslint": "eslint src bin test",
     "test": "mocha ./test/index.js --timeout=10000",
+    "commit-code": "npm run eslint && npm run test",
+    "commit-browser": "npm run build-client-prod && npm run build-face-prod",
+    "commit-mobile": "npm run release-mobile && npm run release-mobile-prod",
     "cordova-init-www": "cross-env-shell \"if [ ! -d './www' ]; then ln -s ./dist/face ./www; fi\"",
     "cordova-init-platforms": "cross-env-shell \"if [ ! -d './platforms/android' ]; then cordova platform add android; fi\"",
     "cordova-init": "npm run cordova-init-www && npm run cordova-init-platforms",
@@ -34,7 +37,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run eslint && npm run test && npm run build-client-prod && npm run build-face-prod && git add ./dist/*"
+      "pre-commit": "pm run commit-code && npm run commit-browser && npm run commit-mobile && git add ./dist/*"
     }
   },
   "keywords": [

@@ -27,7 +27,40 @@
       </div>
     </div>
   </modal-window> 
-  <menu data="${ this.menu }" is-open="${ this.menuModal }" on-is-open="${ this.menuModal = event.detail }"></menu>
+  <modal-window 
+    body-class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4"
+    is-open="${ this.apiAddressModal }"
+    on-is-open="${ this.apiAddressModal = event.detail }"
+    unclosable="${ this.apiAddressModalUnclosable }"
+  >    
+    <form 
+      class="playlist-load"
+      on-submit="${ event.preventDefault(); this.setApiAddress(); }"
+    >                
+      <div class="form-group w-100 mt-3">
+        <input 
+          type="text"
+          class="form-control"
+          focus="${ this.apiAddressModal }"
+          value="${ this.apiAddressInputValue }"
+          on-input="${ this.apiAddressInputValue = event.target.value; }"
+          placeholder="enter an API address"
+          required
+        />
+      </div>
+      <button 
+        type="submit"
+        class="btn form-control btn-primary"
+      >
+        Confirm
+      </button>
+    </form>   
+  </modal-window>
+  <menu 
+    data="${ this.menu }" 
+    is-open="${ this.menuModal }" 
+    on-is-open="${ this.menuModal = event.detail }"
+  ></menu>
   <input 
     type="file"
     id="load-config"
@@ -36,7 +69,7 @@
     accept="application/json"
   >
   <header class="header row p-4 align-items-center">
-    <div class="col-10 col-md-4 col-xl-2 p-0">
+    <div class="col-10 col-md-4 col-xl-3 p-0">
       <a state="app" class="logo">  
         <img src="./img/logo.svg" class="logo-img">
         <div>
@@ -45,7 +78,7 @@
         </div>
       </a>
     </div>
-    <div class="col-2 col-md-8 col-xl-10 p-0 pl-4 text-right">
+    <div class="col-2 col-md-8 col-xl-9 p-0 pl-4 text-right">
       <div class="d-flex flex-row-reverse align-items-center">
         <a 
           href="javascript:;" 
@@ -55,8 +88,8 @@
           <i class="fas fa-bars "></i>
         </a>
         <div class="d-none d-md-block">
-          <ul in="${ this.menu }" class="menu pt-1">
-            <li class="${ this.loopIndex > 1? 'd-none d-lg-block': '' }">          
+          <ul in="${ this.menu }" class="menu pt-1">           
+            <li class="${ this.loopIndex > 1? 'd-none d-lg-block': '' }">                     
               <a 
                 on-click="${ this.loopValue.handler && this.loopValue.handler() }"
                 href="${ this.loopValue.href || 'javascript:;' }" 

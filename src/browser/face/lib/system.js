@@ -1,5 +1,35 @@
+import request from 'akili/src/services/request';
 import client from '../client';
 import clientStorage from '../client-storage';
+import ClientMusiphone from '../../../../dist/musiphone.client.js';
+
+/**
+ * Initialize the client initial address
+ * 
+ * @async
+ * @returns {string|null}
+ */
+export async function setClientInitialAddress() { 
+  let address = localStorage.getItem('apiAddress');
+  address && typeof API_ADDRESS === 'undefined' && !await checkApiAddress(address) && localStorage.removeItem('apiAddress');    
+  address = getApiAddress();
+  localStorage.setItem('apiAddress', address || '');
+  client.address = address;
+  return address;
+}
+
+/**
+ * Get the api address
+ * 
+ * @returns {string|null}
+ */
+export function getApiAddress() {
+  if(!window.cordova) {
+    return ClientMusiphone.getPageAddress();
+  }
+
+  return typeof API_ADDRESS !== 'undefined'? API_ADDRESS: localStorage.getItem('apiAddress');
+}
 
 /**
  * Initialize the data storage (sessionStorage, localStorage)
@@ -68,4 +98,26 @@ export async function initClients() {
   clientStorage.address = await client.getStorageAddress();
   await clientStorage.init();
   workStorage.setItem('storageAddress', clientStorage.workerAddress);
+}
+
+/**
+ * Check an api address is correct
+ * 
+ * @async
+ * @param {string} address
+ * @returns {boolean}
+ */
+export async function checkApiAddress(address) {
+  try {
+    const res = await request.get(`http://${ address }/ping`, { json: true, timeout: 1000 });
+
+    if(typeof res.data == 'object' && res.data.address === address && res.data.version.split('-')[0] == 'musiphone') {
+      return true;
+    }
+  }
+  catch(err) {
+    return false;
+  }
+
+  return false;
 }

@@ -10,6 +10,7 @@ import { saveBlobFile, blobTo } from '../../lib/files';
 import { cleanUpCache } from '../../lib/cache';
 import clientStorage from '../../client-storage';
 import network, { getLocationOrigin } from '../../lib/network';
+import { checkApiAddress } from '../../lib/system';
 import { getPlaylist, addPlaylist as postPlaylist } from '../../actions/playlists';
 import { 
   addSong, 
@@ -36,6 +37,10 @@ export default class App extends Akili.Component {
     router.add('app', '^/musiphone/:hash', {
       component: this,
       handler: async (transition) => {
+        if(!localStorage.apiAddress) {
+          return;
+        }
+
         if(!transition.path.params.hash) {
           if(store.activePlaylist.hash) {
             return transition.reload({ hash: store.activePlaylist.hash });
@@ -63,12 +68,15 @@ export default class App extends Akili.Component {
     this.defaultPageTitle = 'Musiphone - decentralized music player';
     this.mobileDataFolder = '/Android/data/com.museria.musiphone/files';
     this.scope.saveToWebModal = false;
-    this.scope.loadFilwModal = false;
+    this.scope.loadFileModal = false;
+    this.scope.apiAddressModal = window.cordova && !localStorage.apiAddress;
+    this.scope.apiAddressModalUnclosable = !localStorage.apiAddress;
     this.scope.linkIsBlinking = false;
     this.scope.menuModal = false; 
     this.scope.wrongPlaylistHash = this.transition.data === null;
     this.scope.searchInputValue = '';  
     this.scope.loadPlaylistInputValue = '';   
+    this.scope.apiAddressInputValue = localStorage.getItem('apiAddress') || '';  
     this.scope.activePlaylist = [];
     this.scope.playlists = [];
     this.scope.event = {};
@@ -89,7 +97,8 @@ export default class App extends Akili.Component {
     this.scope.sharePlaylistLink = this.sharePlaylistLink.bind(this);    
     this.scope.copyPlaylistLink = this.copyPlaylistLink.bind(this);    
     this.scope.loadPlaylistLink = this.loadPlaylistLink.bind(this); 
-    this.scope.selectFoundSong = this.selectFoundSong.bind(this);          
+    this.scope.selectFoundSong = this.selectFoundSong.bind(this); 
+    this.scope.setApiAddress = this.setApiAddress.bind(this);         
     this.resetSearchEvent();
     this.setMenu();
   } 
@@ -117,16 +126,16 @@ export default class App extends Akili.Component {
   setMenu() {
     this.scope.menu = [
       {
-        text: 'Import config',
+        text: 'Load config',
         icon: 'fa fa-arrow-up',
         handler: this.chooseLoadingConfig.bind(this),
         closeAfter: true
       },
       {
-        text: 'Export config',
+        text: 'Save config',
         icon: 'fa fa-arrow-down',
         handler: this.exportConfig.bind(this)
-      },
+      },      
       {
         text: 'Project repository',
         icon: 'fab fa-github',
@@ -140,6 +149,16 @@ export default class App extends Akili.Component {
         blank: true
       }
     ];
+
+    if(!window.cordova || typeof API_ADDRESS !== 'undefined') {
+      return;
+    }
+    
+    this.scope.menu.splice(2, 0, {
+      text: 'Set address',
+      icon: 'fa fa-arrow-down',
+      handler: () => this.scope.apiAddressModal = true
+    });
   }
 
   handleActiveSong(song) {
@@ -468,5 +487,32 @@ export default class App extends Akili.Component {
     catch(err) {
       store.event = { err };
     }
+  }
+
+  async setApiAddress() { 
+    let address;
+    const err = new Error('Api address invalid or busy');
+
+    try {      
+      let value = this.scope.apiAddressInputValue;
+      !value.match(/^http/i) && (value = `http://${ value }`);
+      const info = url.parse(value);
+
+      if(!info) {
+        throw err;
+      }
+      
+      address = `${ info.hostname }:${ info.port || (info.protocol === 'https:'? 443: 80) }`;
+
+      if(!await checkApiAddress(address)) {
+        throw err;
+      }      
+    }
+    catch(err) {
+      return store.event = { err };
+    }
+
+    localStorage.setItem('apiAddress', address);
+    location.reload();
   }
 }

@@ -64,9 +64,9 @@ There are two sides to work with. On the server side the library allows you to c
 To use browser version of the player you only need to find and open any available musiphone node address. It will look like a regular website. You can use [the player version](https://github.com/ortexx/museria-player/) based on [the global music storage](https://github.com/ortexx/museria-global/).
 
 ## Android player
-To get an android application, you have to install all the necessary dependencies and build the application via [cordova](https://cordova.apache.org/).
-All the necessary scripts you can find in the project [package.json](https://github.com/ortexx/musiphone/blob/master/package.json).
-The only required option is an API address. It is necessary for the application to know where to connect for working. You can pass  __MUSIPHONE_API_ADDRESS__ environment variable. The value can be  any musiphone node address in your network:
+You can get prepared apk files from [./dist/android](https://github.com/ortexx/musiphone/tree/master/dist/android). To build an android application by yourself, you have to install all the necessary dependencies and compile the application via [cordova](https://cordova.apache.org/).
+All the necessary scripts you can find in the project [./package.json](https://github.com/ortexx/musiphone/blob/master/package.json).
+The only option to pass for building is an API address. It is necessary for the application to know where to connect for working. You can specify  __MUSIPHONE_API_ADDRESS__ environment variable. If you don't pass it, the user will have to set it up in the app. The value can be any musiphone node address in your network:
 
 `MUSIPHONE_API_ADDRESS=192.168.0.100:2790 npm run make-mobile`.
 

@@ -1,6 +1,4 @@
 /node_modules
-/dist/android/*
-!/dist/android/.gitkeep
 /plugins/
 /platforms/
 

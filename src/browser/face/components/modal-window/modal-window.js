@@ -18,5 +18,6 @@ export default class ModalWindow extends Akili.Component {
     this.attr('body-class', 'bodyClass');
     this.attr('z-index', 'zIndex');
     this.attr('isOpen', 'isOpen');
+    this.attr('unclosable', 'unclosable');
   }
 }
