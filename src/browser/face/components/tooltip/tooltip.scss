@@ -1,4 +1,17 @@
 @import '../../styles/vars.scss';
+@import '~bootstrap/scss/bootstrap-grid.scss';
+
+$sizes: xs, sm, md, lg, xl;
+
+@for $i from 1 through length($sizes) {
+  $item: nth($sizes, $i);
+
+  @include media-breakpoint-up($item) { 
+    [data-tippy-root] {
+      max-width: #{(100 - $i * 10)}vw;
+    }
+  }
+}
 
 .tippy-box {
   opacity: 0.9;
