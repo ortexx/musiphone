@@ -405,6 +405,8 @@ export default class App extends Akili.Component {
   }
 
   async selectPlaylist(playlist) {
+    clearInterval(this.externalInterval);
+
     if(!playlist) {
       store.activePlaylist = createPlaylist();
       return;
