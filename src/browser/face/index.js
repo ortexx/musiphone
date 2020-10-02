@@ -54,7 +54,7 @@ document.addEventListener(window.cordova? 'deviceready': 'DOMContentLoaded', asy
     network.connection && address && await initClients();
     await Akili.init();
 
-    if(window.cordova) {
+    if(window.cordova && window.plugins && window.plugins.webintent) {
       window.plugins.webintent.getUri(handleDeepLinks);
       window.plugins.webintent.onNewIntent(handleDeepLinks);   
     }

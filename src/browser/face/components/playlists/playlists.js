@@ -54,11 +54,11 @@ export default class Playlists extends Akili.Component {
     return str;
   }
 
-  selectPlaylist(playlist) {
-    playlist.isLoading = true;
+  selectPlaylist(playlist) {   
     let pl = null;
 
     if(playlist) {
+      playlist.isLoading = true;
       pl = {...playlist};
       delete pl._title;
     }
