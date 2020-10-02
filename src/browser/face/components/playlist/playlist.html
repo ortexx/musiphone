@@ -1,11 +1,39 @@
-<ul in="${ this.data.songs }" chunks="200" class="playlist">
-  <li class="playlist-song">
-    <song-card 
-      info="${ this.loopValue }" 
-      buttons="${ { add: false, cache: !this.loopValue.isCacheSaving, cacheLoading: this.loopValue.isCacheSaving } }"
-      on-click="${ this.selectSong(this.loopValue) }"
-      on-remove="${ this.removeSong(this.loopValue.title) }"
-      on-cache="${ this.toggleCache(this.loopValue) }"
-    ></song-card>
-  </li>
-</ul>
+<div class="playlist">
+  <div class="playlist-search mt-3 mb-4">
+    <i class="fas fa-eye"></i>
+    <input 
+      class="form-control" 
+      value="${ this.songSearchValue }"
+      placeholder="search in the playlist..."
+      on-debounce="${ this.page = 1; this.songSearchValue = event.target.value }"
+    >
+    <div class="playlist-search-info">
+      <if is="${ this.foundSongs.length != this.data.songs.length }">
+        ${ this.foundSongs.length } /
+      </if>
+      <span>
+        ${ this.data.songs.length }
+      </span>
+    </div>
+  </div>
+  <if is="${ this.songSearchValue && !this.filteredSongs.length }" class="alert alert-info mt-3 d-block">
+    There are no songs with such filters
+  </if>
+  <scroller on-border="${ this.page++ }">
+    <ul 
+      in="${ this.filteredSongs = this.filterSongs(this.data.songs, this.page, this.songSearchValue) }" 
+      chunks="100"
+      class="playlist-list"
+    >
+      <li class="playlist-list-song">
+        <song-card
+          info="${ this.loopValue }" 
+          buttons="${ { add: false, cache: !this.loopValue.isCacheSaving, cacheLoading: this.loopValue.isCacheSaving } }"
+          on-click="${ this.selectSong(this.loopValue) }"
+          on-remove="${ this.removeSong(this.loopValue.title) }"
+          on-cache="${ this.toggleCache(this.loopValue) }"
+        ></song-card>
+      </li>
+    </ul>
+  </scroller>
+</div>

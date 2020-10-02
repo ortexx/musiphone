@@ -1,6 +1,7 @@
 import './playlist.scss'
 import Akili from 'akili';
 import store from 'akili/src/services/store';
+import utils from 'akili/src/utils';
 import { removeSong } from '../../lib/playlists';
 import { downloadCacheSong, removeCacheSong, hasCache } from '../../lib/cache';
 import Sortable from '@shopify/draggable/lib/sortable';
@@ -13,12 +14,15 @@ export default class Playlist extends Akili.Component {
     Akili.component('playlist', this);
   }
 
-  created() {
-    this.scope.toggleCache  = this.toggleCache.bind(this);
-    this.scope.removeSong = this.removeSong.bind(this);
-    this.scope.selectSong = this.selectSong.bind(this);    
-    this.sortable = new Sortable(this.el.querySelector('ul.playlist'), {
-      draggable: 'li.playlist-song',
+  created() {    
+    this.pageChunk = 30;
+    this.scope.page = 1; 
+    this.scope.songSearchValue = '';  
+    this.scope.filteredSongs = [];  
+    this.scope.foundSongs = [];
+    this.scope.data = { songs: [] };
+    this.sortable = new Sortable(this.el.querySelector('ul.playlist-list'), {
+      draggable: 'li.playlist-list-song',
       delay: 300,
       mirror: {
         constrainDimensions: true
@@ -27,14 +31,18 @@ export default class Playlist extends Akili.Component {
     this.sortable.on('sortable:start', this.onSortableStart.bind(this));    
     this.sortable.on('drag:start', this.onSortableDrag.bind(this));
     this.sortable.on('sortable:stop', this.onSortableStop.bind(this));
+    this.scope.toggleCache  = this.toggleCache.bind(this);
+    this.scope.removeSong = this.removeSong.bind(this);
+    this.scope.selectSong = this.selectSong.bind(this);
+    this.scope.filterSongs = this.filterSongs.bind(this);  
   }
 
-  compiled() {    
-    this.attr('data', this.handleData);
+  compiled() { 
+    this.attr('data', this.handleData);    
     this.store('isPlayerVisible', this.reactOnPlayerVisibility); 
     this.store('activeSong', this.setActiveSong);
     this.store('cachedSongs', this.setCachedSongs);
-    this.store('song', this.changeSong);
+    this.store('song', this.changeSong);    
   }
 
   removed() {
@@ -43,8 +51,13 @@ export default class Playlist extends Akili.Component {
 
   handleData(data) {
     this.scope.data = data;
-    this.setActiveSong(store.activeSong);
-    this.setCachedSongs(store.cachedSongs);
+    this.isCompiled && this.setActiveSong(store.activeSong);
+    this.isCompiled && this.setCachedSongs(store.cachedSongs);
+  }
+
+  filterSongs(songs, page, search) {
+    this.scope.foundSongs = utils.filter(songs, search, ['title']);
+    return this.scope.foundSongs.slice(0, page * this.pageChunk);
   }
 
   onSortableStart(event) {
@@ -87,19 +100,21 @@ export default class Playlist extends Akili.Component {
     this.scope.data.songs.forEach(s => s.isActive = song? s.title === song.title: false);
   }
 
-  setCachedSongs(arr) {
+  setCachedSongs(arr) {    
     const titles = {};
     arr.forEach(s => titles[s.title] = s);
-    this.scope.data.songs = this.scope.data.songs.map(s => {
+    this.scope.data.songs.forEach(s => {      
       const info = titles[s.title];
-      s.isCached = !!info;
-      Object.assign(s, info);
-      return s;
+      Object.assign(s, info, { isCached: !!info });
     });
   }
 
   selectSong(song) {
-    this.setActiveSong(song);
+    if(this.scope.songSearchValue) {
+      this.scope.songSearchValue = '';
+      this.scope.page = 1;
+    }
+    
     store.activeSong = song;
   }
 
@@ -112,17 +127,18 @@ export default class Playlist extends Akili.Component {
   }
 
   async addCache(song) {
+    song = this.scope.data.songs.find(s => s.title === song.title);
     song.isCacheSaving = true;
        
     try {
-      await downloadCacheSong(song);          
+      await downloadCacheSong(song);
     }
     catch(err) {
       store.event = { err };
     }
 
     song.isCacheSaving = false;
-    song.isFailed = false;
+    song.isFailed = false;    
   }
 
   async removeCache(song) {

@@ -19,10 +19,11 @@ export function getLocationOrigin() {
 /**
  * Handle android deep links
  * 
+ * @async
  * @param {string} uri
  */
-export function handleDeepLinks(uri) {
-  const hash = parsePlaylistLink(uri);
+export async function handleDeepLinks(uri) {
+  const hash = await parsePlaylistLink(uri);
 
   if(!hash) {
     return;

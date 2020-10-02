@@ -8,6 +8,7 @@ import Menu from './components/menu/menu';
 import Player from './components/player/player';
 import Playlist from './components/playlist/playlist';
 import Playlists from './components/playlists/playlists';
+import Scroller from './components/scroller/scroller';
 import Scrollbar from './components/scrollbar/scrollbar';
 import Tooltip from './components/tooltip/tooltip';
 import ModalWindow from './components/modal-window/modal-window';
@@ -24,6 +25,7 @@ Player.define();
 Playlist.define();
 Playlists.define()
 Tooltip.define();
+Scroller.define();
 Scrollbar.define();
 ModalWindow.define();
 

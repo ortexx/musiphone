@@ -22,7 +22,7 @@ export default class Player extends Akili.Component {
     this.calculationDebounce = 100;
     this.audioDelayTimeout = 10000;
     this.scope.audioError = false;  
-    this.scope.isLoading = true;
+    this.scope.isLoading = false;
     this.scope.random = workStorage.getItem('playerRandom')? true: false; 
     this.scope.repeat = workStorage.getItem('playerRepeat')? true: false;  
     this.scope.closePlayer = this.closePlayer.bind(this);
@@ -271,8 +271,8 @@ export default class Player extends Akili.Component {
 
     this.stopLoading();
     store.isPlayerVisible = !!song;
-    const cacheInfo = getCache(song.title);
-    cacheInfo && (song = { ...song, ...cacheInfo });
+    const cacheInfo = getCache(song.title) || {};
+    song = { ...song, ...cacheInfo };
     this.scope.song = song;
     this.scope.progress = 0;
     this.scope.buffer = 0;

@@ -45,7 +45,7 @@ export default class Playlists extends Akili.Component {
     
     if(playlist.title) {
       str += playlist.title;
-      this.titles[playlist.title] > 1 && (str += `(${hash})`);
+      this.titles[playlist.title] > 1 && (str += ` (${hash})`);
     }
     else {
       str += hash;
@@ -55,8 +55,14 @@ export default class Playlists extends Akili.Component {
   }
 
   selectPlaylist(playlist) {
-    const pl = {...playlist};
-    delete pl._title;
+    playlist.isLoading = true;
+    let pl = null;
+
+    if(playlist) {
+      pl = {...playlist};
+      delete pl._title;
+    }
+    
     this.attrs.onSelect.trigger(pl);
   }
 

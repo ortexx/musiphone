@@ -4,6 +4,8 @@ import utils from 'akili/src/utils';
 import clientStorage from '../client-storage';
 import client from '../client';
 import url from 'url';
+import qs from 'querystring';
+import base64url from 'base64url';
 
 const maxPlaylists = 15;
 
@@ -128,6 +130,36 @@ export function createPlaylistLink(hash) {
 }
 
 /**
+ * Create an external hash
+ * 
+ * @param {string} link 
+ * @returns {string}
+ */
+export function createPlaylistExternalHash(link) { 
+  return `external:${ base64url(link) }`;
+}
+
+/**
+ * Check the hash is external
+ * 
+ * @param {string} hash 
+ * @returns {boolean}
+ */
+export function isExternalHash(hash) {
+  return !!String(hash).match('external:');
+}
+
+/**
+ * Get the link from the external hash
+ * 
+ * @param {string} hash 
+ * @returns  {string} string 
+ */
+export function getPlaylistLinkFromExternalHash(hash) {
+  return base64url.decode(hash.split(':')[1]);
+}
+
+/**
  * Prepare the playlists to export
  * 
  * @param {object[]} playlists 
@@ -203,10 +235,11 @@ export function preparePlaylistToImport(playlist) {
 /**
  * Parse the hash from the playlist link
  * 
+ * @async
  * @param {string} link 
  * @return {string}
  */
-export function parsePlaylistLink(link) {
+export async function parsePlaylistLink(link) {
   if(typeof link !== 'string') {
     return '';
   }
@@ -220,11 +253,11 @@ export function parsePlaylistLink(link) {
   const details = (info.path + '').split('/');
   details.shift();
 
-  if(details[0] !== 'musiphone' || details.length != 2) {
-    return null;
+  if(details[0] === 'musiphone' && details.length == 2) {
+    return details[1];
   }
 
-  return details[1];
+  return createPlaylistExternalHash(link);
 }
 
 /**
@@ -250,4 +283,81 @@ export function findPlaylist(title, songs) {
   }
 
   return null;
+}
+
+/**
+ * Compare two playlists
+ * 
+ * @param {object} first 
+ * @param {object} second
+ * @returns {boolean}
+ */
+export function comparePlaylists(first, second) {
+  if(!first && !second) {
+    return true;
+  }
+
+  if(!first || !second) {
+    return false;
+  }
+  
+  if(first.title !== second.title || first.hash !== second.hash) {
+    return false;
+  }
+   
+  return utils.compare(first.songs.map(s => s.title), second.songs.map(s => s.title));
+}
+
+/**
+ * Parse the playlist text
+ * 
+ * @param {string} text 
+ * @returns {{songs: string[], title: string}}
+ */
+export function parsePlaylist(text) {
+  const lines = text.split('\n');
+  const songs = [];
+  let title = '';
+  let lastSongTitle = '';
+
+  for(let i = 0; i < lines.length; i++) {    
+    const line = lines[i];
+
+    if(!line.trim()) {
+      continue;
+    }
+
+    const info = url.parse(line);
+    const ext = line.split(':'); 
+    let songTitle = lastSongTitle;
+    lastSongTitle = '';
+
+    if(ext[0] == '#PLAYLIST') {
+      title = ext[1];
+      continue;
+    }
+
+    if(ext[0] == '#EXTINF') {
+      lastSongTitle = (ext[1] || '').split(',')[1];        
+      continue;
+    }
+
+    if(!info || !info.query) {
+      continue;
+    }
+
+    const query = qs.parse(info.query);
+
+    if(query.title && !songTitle) {
+      songTitle = query.title;
+    }
+
+    if(!songTitle || !clientStorage.constructor.utils.isSongTitle(songTitle)) {
+      continue;
+    }
+
+    songs.push(createSongInfo(songTitle));      
+  }
+
+  return { title, songs };
 }

@@ -35,6 +35,7 @@ export default class Tooltip extends Akili.Component {
 
   remove() {
     this.tooltip && this.tooltip.destroy();
+    delete this.tooltip;
   }
 
   create() {    

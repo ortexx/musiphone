@@ -1,16 +1,49 @@
 @import '../../styles/vars.scss';
 
 .playlist {
-  list-style: none;
-  outline: none;
+  &-search {
+    position: relative;
+  
+    & > i {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 0.8em;
+      color: $light;
+      font-size: 1em;
+      z-index: 1;
+    }
+  
+    & > input { 
+      padding: 0 6.5em 0 2.5em;      
 
-  & > li {
-    margin-top: 1em;    
+      &:focus {
+        z-index: 0;
+      }
+    }
+
+    &-info {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 1em;
+      font-size: 0.9em;
+      color: $cyan;
+    }
+  }
+
+  &-list {
+    list-style: none;
     outline: none;
-  }
 
-  .draggable-mirror {
-    box-shadow: 0px 0px 4px 2px rgba(white, 0.8);
-  }
+    & > li {
+      margin-top: 1em;    
+      outline: none;
+    }
+
+    .draggable-mirror {
+      box-shadow: 0px 0px 4px 2px rgba(white, 0.8);
+    }
+  }  
 }
 

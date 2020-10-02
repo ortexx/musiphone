@@ -9,11 +9,15 @@
           <span class="ellipsis title">${ this.loopValue._title }</span>
         </tooltip>        
         <a
+          hidden="${ this.loopValue.isLoading }"
           class="playlists-remove-btn"
           href="javascript:;" 
           on-click="${ event.preventDefault(); event.stopPropagation(); this.removePlaylist(this.loopValue) }"
         >
           <i class="fa fa-times"></i>
+        </a>
+        <a hidden="${ !this.loopValue.isLoading }">
+          <i class="fa fa-spinner fa-spin"></i>
         </a>
       </li>
     </ul>

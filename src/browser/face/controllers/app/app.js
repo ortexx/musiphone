@@ -2,7 +2,6 @@ import './app.scss';
 import Akili from 'akili';
 import slugify from 'slugify';
 import url from 'url';
-import qs from 'querystring';
 import router from 'akili/src/services/router';
 import store from 'akili/src/services/store';
 import utils from 'akili/src/utils';
@@ -11,20 +10,20 @@ import { cleanUpCache } from '../../lib/cache';
 import clientStorage from '../../client-storage';
 import network, { getLocationOrigin } from '../../lib/network';
 import { checkApiAddress } from '../../lib/system';
-import { getPlaylist, addPlaylist as postPlaylist } from '../../actions/playlists';
+import { getPlaylist, getExternalPlaylist, addPlaylist as postPlaylist } from '../../actions/playlists';
 import { 
   addSong, 
   addPlaylist,
   getActivePlaylist,
   getPlaylistByHash,
-  preparePlaylistToShow,
+  isExternalHash,
   preparePlaylistsToExport,
   preparePlaylistToExport,
-  createPlaylistLink,
   createPlaylist,
-  createSongInfo,
+  parsePlaylist,
   emptyPlaylist,
   parsePlaylistLink,
+  comparePlaylists,
   findPlaylist
 } from '../../lib/playlists';
 
@@ -37,11 +36,13 @@ export default class App extends Akili.Component {
     router.add('app', '^/musiphone/:hash', {
       component: this,
       handler: async (transition) => {
+        const hash = transition.path.params.hash;
+
         if(!localStorage.apiAddress) {
           return;
         }
 
-        if(!transition.path.params.hash) {
+        if(!hash) {
           if(store.activePlaylist.hash) {
             return transition.reload({ hash: store.activePlaylist.hash });
           }
@@ -52,11 +53,10 @@ export default class App extends Akili.Component {
         let playlist;
 
         if(network.connection) {
-          playlist = await getPlaylist(transition.path.params.hash);
-          playlist && (playlist = preparePlaylistToShow(playlist));
+          playlist = await (isExternalHash(hash)? getExternalPlaylist: getPlaylist)(hash);
         }
         else {
-          playlist = utils.copy(getPlaylistByHash(transition.path.params.hash));
+          playlist = utils.copy(getPlaylistByHash(hash));
         }
 
         return playlist;
@@ -67,12 +67,14 @@ export default class App extends Akili.Component {
   created() {  
     this.defaultPageTitle = 'Musiphone - decentralized music player';
     this.mobileDataFolder = '/Android/data/com.museria.musiphone/files';
+    this.externalLinkUpdateInterval = 5000;
     this.scope.saveToWebModal = false;
     this.scope.loadFileModal = false;
     this.scope.apiAddressModal = window.cordova && !localStorage.apiAddress;
     this.scope.apiAddressModalUnclosable = !localStorage.apiAddress;
     this.scope.linkIsBlinking = false;
     this.scope.menuModal = false; 
+    this.scope.isConfirming = false;
     this.scope.wrongPlaylistHash = this.transition.data === null;
     this.scope.searchInputValue = '';  
     this.scope.loadPlaylistInputValue = '';   
@@ -81,6 +83,7 @@ export default class App extends Akili.Component {
     this.scope.playlists = [];
     this.scope.event = {};
     this.scope.storageUrl = `http://${ clientStorage.address || workStorage.getItem('storageAddress') }`;
+    this.scope.confirm = this.confirm.bind(this);
     this.scope.addSong = this.addSong.bind(this);
     this.scope.findSong = this.findSong.bind(this);    
     this.scope.loadFile = this.loadFile.bind(this);    
@@ -103,11 +106,11 @@ export default class App extends Akili.Component {
     this.setMenu();
   } 
 
-  compiled() {
+  async compiled() {
     if(this.transition.data) {            
       store.activePlaylist = utils.copy(addPlaylist(this.transition.data));
     }
-    else if(this.transition.params.hash === store.activePlaylist.hash) {
+    else if(this.transition.params.hash && this.transition.params.hash === store.activePlaylist.hash) {
       store.activePlaylist = createPlaylist();
     }
 
@@ -115,8 +118,29 @@ export default class App extends Akili.Component {
     this.store('pageTitle', this.handlePageTitle, { callOnStart: true });    
     this.store('event', this.handleEvent);
     this.store('playlists', this.handlePlaylists);
-    this.store('activePlaylist', this.handleActivePlaylist);
+    this.store('activePlaylist', this.handleActivePlaylist);    
+    const isExternal = isExternalHash(store.activePlaylist.hash);
+
+    if(this.transition.data) {      
+      !isExternal && await this.postPlaylist(store.activePlaylist);
+    }    
+
+    clearInterval(this.externalInterval);
+    isExternal && (this.externalInterval = setInterval(async () => {
+      const playlist = await getExternalPlaylist(store.activePlaylist.hash); 
+
+      if(!playlist || comparePlaylists(playlist, utils.copy(store.activePlaylist))) {
+        return;
+      }
+      
+      this.disableActivePlaylist = true;
+      store.activePlaylist = { ...store.activePlaylist, ...playlist };
+    }, this.externalLinkUpdateInterval));
   }
+
+  removed() {
+    clearInterval(this.externalInterval);
+  } 
 
   selectFoundSong() {
     this.scope.searchEvent.meta.isActive = true;
@@ -184,14 +208,8 @@ export default class App extends Akili.Component {
         confirm: true, 
         type: 'warning', 
         isActive: true,
-        onYes: () => {
-          ev.onYes && ev.onYes();
-          this.scope.event.isActive = false;
-        },
-        onNo: () => {
-          ev.onNo && ev.onNo();
-          this.scope.event.isActive = false;
-        }
+        onYes: ev.onYes,
+        onNo: ev.onNo,
       };      
     }
     else if(ev.err) {
@@ -207,22 +225,26 @@ export default class App extends Akili.Component {
   }
 
   async handleActivePlaylist(playlist) {
+    const changed = !comparePlaylists(this.lastActivePlaylist, playlist);
+
     if(
-      this.__isCompiled &&
+      this.isCompiled &&
       this.lastActivePlaylist &&
       playlist.link && 
-      !this.__disableActivePlaylist && 
-      !utils.compare(!this.lastActivePlaylist, playlist)
-    ) {
+      !this.disableActivePlaylist &&
+      changed
+    ) {      
       delete store.activePlaylist.__target.link;
       delete store.activePlaylist.__target.hash;
       delete playlist.link;
       delete playlist.hash;
+      clearInterval(this.externalInterval);
       router.reload({ hash: null }, {}, undefined, { reload: false, saveScrollPosition: true });
     }
     
+    this.disableActivePlaylist = false;
     this.scope.saveToWebTitle = playlist.title;
-    this.lastActivePlaylist = playlist; 
+    changed && (this.lastActivePlaylist = playlist);
     this.scope.activePlaylist = playlist;      
     workStorage.setItem('activePlaylist', JSON.stringify(preparePlaylistToExport(playlist)));  
     await cleanUpCache();
@@ -335,7 +357,7 @@ export default class App extends Akili.Component {
   }
 
   async loadPlaylistLink() {
-    const hash = parsePlaylistLink(this.scope.loadPlaylistInputValue);
+    const hash = await parsePlaylistLink(this.scope.loadPlaylistInputValue);
 
     if(!hash) {
       return store.event = { err: new Error('Wrong playlist link') };
@@ -348,49 +370,9 @@ export default class App extends Akili.Component {
 
   async loadFile(file) {
     const text = await this.readFileToText(file);
-    const lines = text.split('\n');
-    const songs = [];
-    let title = file.name.split('.')[0];
-    let lastSongTitle = '';
-
-    for(let i = 0; i < lines.length; i++) {    
-      const line = lines[i];
-
-      if(!line.trim()) {
-        continue;
-      }
-
-      const info = url.parse(line);
-      const ext = line.split(':'); 
-      let songTitle = lastSongTitle;
-      lastSongTitle = ''; 
-
-      if(ext[0] == '#PLAYLIST') {
-        title = ext[1];
-        continue;
-      }
-
-      if(ext[0] == '#EXTINF') {
-        lastSongTitle = (ext[1] || '').split(',')[1];        
-        continue;
-      }
-
-      if(!info || !info.query) {
-        continue;
-      }
-
-      const query = qs.parse(info.query);
-
-      if(query.title && !songTitle) {
-        songTitle = query.title;
-      }
-
-      if(!songTitle || !clientStorage.constructor.utils.isSongTitle(songTitle)) {
-        continue;
-      }
-
-      songs.push(createSongInfo(songTitle));      
-    }
+    
+    let { title, songs } = parsePlaylist(text);
+    !title && (title = file.name.split('.')[0]);
     
     if(!songs.length) {
       return store.event = { err: new Error('There are not valid links in the file') };
@@ -422,21 +404,13 @@ export default class App extends Akili.Component {
     return blobTo(file, 'readAsText');
   }
 
-  async selectPlaylist(playlist, update = true) {
+  async selectPlaylist(playlist) {
     if(!playlist) {
       store.activePlaylist = createPlaylist();
       return;
     }
-
-    this.__disableActivePlaylist = true;
-    store.activePlaylist.link = createPlaylistLink(playlist.hash);
-    store.activePlaylist.title = playlist.title;
-    store.activePlaylist.hash = playlist.hash;
-    store.activePlaylist.songs = playlist.songs;     
-    await router.reload({ hash: playlist.hash }, {}, undefined, {  reload: false, saveScrollPosition: true });
-    this.__disableActivePlaylist = false;
-    addPlaylist(playlist);
-    update && await this.postPlaylist(playlist);
+    
+    await router.reload({ hash: playlist.hash }, {}, undefined, { reload: true, saveScrollPosition: true });
   }
 
   async postPlaylist(playlist) {
@@ -482,7 +456,7 @@ export default class App extends Akili.Component {
         songs: store.activePlaylist.songs
       });
       this.scope.saveToWebModal = false;
-      await this.selectPlaylist(playlist, false);
+      await this.selectPlaylist(playlist);
     }
     catch(err) {
       store.event = { err };
@@ -514,5 +488,13 @@ export default class App extends Akili.Component {
 
     localStorage.setItem('apiAddress', address);
     location.reload();
+  }
+
+  async confirm(yes) {
+    const fn = this.scope.event[yes? 'onYes': 'onNo'];
+    this.scope.isConfirming = true;    
+    fn && await fn();
+    this.scope.event.isActive = false;
+    this.scope.isConfirming = false;
   }
 }
