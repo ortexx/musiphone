@@ -1,4 +1,4 @@
-# [Musiphone](https://github.com/ortexx/musiphone/) [alpha] [![npm version](https://badge.fury.io/js/musiphone.svg)](https://badge.fury.io/js/musiphone) [Build status](https://github.com/ortexx/musiphone/workflows/build/badge.svg)](https://github.com/ortexx/musiphone/actions)
+# [Musiphone](https://github.com/ortexx/musiphone/) [alpha] [![npm version](https://badge.fury.io/js/musiphone.svg)](https://badge.fury.io/js/musiphone) [![Build status](https://github.com/ortexx/musiphone/workflows/build/badge.svg)](https://github.com/ortexx/musiphone/actions)
 
 Musiphone is a decentralized music player based on [the museria project](https://github.com/ortexx/museria/).
 

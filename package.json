@@ -1,6 +1,6 @@
 {
   "name": "musiphone",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
