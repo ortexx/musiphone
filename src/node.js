@@ -38,9 +38,23 @@ module.exports = (Parent) => {
       super(options);
     }
 
-    async init() {
-      await this.addCollection('playlist', new CollectionMusiphone(this, this.options.playlist.collection));
-      return await super.init.apply(this, arguments);
+    /**
+     * Prepare the services
+     * 
+     * @async
+     */
+    async prepareServices() {
+      await super.prepareServices.apply(this, arguments);
+      await this.preparePlaylistCollection();
+    }
+
+    /**
+     * Prepare the playlist collection service
+     * 
+     * @async
+     */
+    async preparePlaylistCollection() {
+      await this.addCollection('playlist', new CollectionMusiphone(this.options.playlist.collection));
     }
 
     /**

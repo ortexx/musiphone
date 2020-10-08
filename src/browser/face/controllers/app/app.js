@@ -5,7 +5,7 @@ import url from 'url';
 import router from 'akili/src/services/router';
 import store from 'akili/src/services/store';
 import utils from 'akili/src/utils';
-import { saveBlobFile, blobTo } from '../../lib/files';
+import { saveTextToFile, blobTo, getDownloadFolder } from '../../lib/files';
 import { cleanUpCache } from '../../lib/cache';
 import clientStorage from '../../client-storage';
 import network, { getLocationOrigin } from '../../lib/network';
@@ -66,7 +66,6 @@ export default class App extends Akili.Component {
 
   created() {  
     this.defaultPageTitle = 'Musiphone - decentralized music player';
-    this.mobileDataFolder = '/Android/data/com.museria.musiphone/files';
     this.externalLinkUpdateInterval = 5000;
     this.scope.saveToWebModal = false;
     this.scope.loadFileModal = false;
@@ -325,8 +324,9 @@ export default class App extends Akili.Component {
   }
   
   async downloadFileMobile(text, filename) {
-    await saveBlobFile(text, filename);
-    store.event = { message: `The file has been saved to ${ this.mobileDataFolder }/${filename}` };
+    const filePath = `${ getDownloadFolder() }${ filename }`;
+    await saveTextToFile(text, filePath);
+    store.event = { message: `The file has been saved to ${ filePath }` };
   }
 
   async sharePlaylistLink() {
@@ -365,6 +365,7 @@ export default class App extends Akili.Component {
 
     this.scope.loadPlaylistModal = false;
     this.scope.loadPlaylistInputValue = '';
+    clearInterval(this.externalInterval);
     router.state('app', { hash });
   }
 
@@ -385,8 +386,9 @@ export default class App extends Akili.Component {
       return this.selectPlaylist(found);
     }
 
+    clearInterval(this.externalInterval);
     store.activePlaylist.songs = songs;
-    store.activePlaylist.title = title;   
+    store.activePlaylist.title = title;  
   }
 
   async importConfig(file) {

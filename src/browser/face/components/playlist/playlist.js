@@ -3,7 +3,7 @@ import Akili from 'akili';
 import store from 'akili/src/services/store';
 import utils from 'akili/src/utils';
 import { removeSong } from '../../lib/playlists';
-import { downloadCacheSong, removeCacheSong, hasCache } from '../../lib/cache';
+import { downloadCacheSong, removeCacheSong, hasCache, trimCacheFromSong } from '../../lib/cache';
 import Sortable from '@shopify/draggable/lib/sortable';
 
 export default class Playlist extends Akili.Component {
@@ -103,9 +103,10 @@ export default class Playlist extends Akili.Component {
   setCachedSongs(arr) {    
     const titles = {};
     arr.forEach(s => titles[s.title] = s);
-    this.scope.data.songs.forEach(s => {      
-      const info = titles[s.title];
-      Object.assign(s, info, { isCached: !!info });
+    this.scope.data.songs.forEach(s => { 
+      trimCacheFromSong(s);    
+      const info = titles[s.title] || {};      
+      Object.assign(s, info, { isCached: !!titles[s.title] });
     });
   }
 
@@ -143,7 +144,7 @@ export default class Playlist extends Akili.Component {
 
   async removeCache(song) {
     try {
-      await removeCacheSong(song.title);          
+      await removeCacheSong(song.title);  
     }
     catch(err) {
       store.event = { err };

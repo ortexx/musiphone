@@ -1,6 +1,19 @@
 import pathLib from 'path';
 
 /**
+ * Get the system folder for downloading files
+ * 
+ * @returns {string} 
+ */
+export function getDownloadFolder() {
+  if(device.platform === 'iOS') {
+    return cordova.file.documentsDirectory;
+  }
+  
+  return `${ cordova.file.externalRootDirectory }Download/`;
+}
+
+/**
  * Read blob to something (array, data uri, etc)
  * 
  * @async
@@ -93,15 +106,16 @@ export async function exists (path) {
  * 
  * @async
  * @param {string} text 
- * @param {string} filename  
+ * @param {string} path  
  */
-export async function saveBlobFile(text, filename) {
-  const file = await createFile(cordova.file.externalDataDirectory, filename);
+export async function saveTextToFile(text, path) {
+  const file = await createFile(pathLib.dirname(path), pathLib.basename(path));
   const url = file.toURL();
-
+  
   try {
     const writer = await createFileWriter(file);
     await writeToFile(writer, text);
+    return file;
   }
   catch(err) {
     await remove(url);

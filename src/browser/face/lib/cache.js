@@ -1,7 +1,8 @@
 import store from 'akili/src/services/store';
+import utils from 'akili/src/utils';
 import clientStorage from '../client-storage';
 import { getDatabase } from './database';
-import { 
+import {
   download, 
   readdir, 
   remove, 
@@ -340,4 +341,26 @@ export async function getSongCacheInfoFromFileEntry(entry) {
  */
 export async function prepareSongTagsBuffer(blob) {
   return Buffer.from(await blobTo(blob.slice(0, 1024 * 120), 'readAsArrayBuffer'));
+}
+
+/**
+ * Trim the cache info from the song
+ * 
+ * @param {object} song 
+ * @returns {object}
+ */
+export function trimCacheFromSong(song) {
+  delete song.audioLinkCache;
+  delete song.coverLinkCache;
+  return song;
+}
+
+/**
+ * Exclude the cache info from the song
+ * 
+ * @param {object} song 
+ * @returns {object}
+ */
+export function excludeCacheFromSong(song) {
+  return utils.excludeKeys(song, ['audioLinkCache', 'audioLinkCache']);
 }

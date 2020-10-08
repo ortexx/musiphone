@@ -2,7 +2,7 @@ import './player.scss'
 import Akili from 'akili';
 import utils from 'akili/src/utils';
 import store from 'akili/src/services/store';
-import { getCache } from '../../lib/cache';
+import { getCache, excludeCacheFromSong } from '../../lib/cache';
 import network from '../../lib/network';
 
 export default class Player extends Akili.Component {
@@ -73,6 +73,7 @@ export default class Player extends Akili.Component {
     store.isPlayerVisible = false;
     store.activeSong = null;
     store.pageTitle = null;
+    cordova && MusicControls.destroy();
   }
 
   keyboardControl(event) {
@@ -272,7 +273,7 @@ export default class Player extends Akili.Component {
     this.stopLoading();
     store.isPlayerVisible = !!song;
     const cacheInfo = getCache(song.title) || {};
-    song = { ...song, ...cacheInfo };
+    song = { ...excludeCacheFromSong(song), ...cacheInfo };
     this.scope.song = song;
     this.scope.progress = 0;
     this.scope.buffer = 0;
@@ -399,8 +400,8 @@ export default class Player extends Akili.Component {
           this.onMusicEnd();
         }
 
-        if(status == 3) {          
-          MusicControls.updateIsPlaying(false);
+        if(status == 2 || status == 3) {          
+          MusicControls.updateIsPlaying(status == 2);
         }
         
         if(status == 2 && !media.__resolved) {
@@ -436,10 +437,11 @@ export default class Player extends Akili.Component {
       });
     }    
 
-    MusicControls.subscribe((action) => {
-      const message = JSON.parse(action).message;
+    MusicControls.subscribe(action => {
+      const parsed = JSON.parse(action);
+      const message = parsed.message;
     
-      if(message == 'music-controls-media-button-play-pause') {
+      if(message == 'music-controls-media-button-play-pause' || message == 'music-controls-toggle-play-pause') {
         this.scope.isPlaying? this.pause(): this.play();
       }
       else if(message == 'music-controls-next' || message == 'music-controls-media-button-next') {
@@ -455,7 +457,7 @@ export default class Player extends Akili.Component {
         this.play();
       }
       else if(message == 'music-controls-seek-to') {
-        MusicControls.updateElapsed({ elapsed: message.position, isPlaying: true });
+        MusicControls.updateElapsed({ elapsed: parsed.position, isPlaying: true });
       }
     });
 

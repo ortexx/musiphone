@@ -26,6 +26,7 @@
     "build-face-prod": "cross-env NODE_ENV=production webpack --config=webpack.face.js",
     "build-mobile": "webpack --config=webpack.mobile.js",
     "build-mobile-prod": "cross-env NODE_ENV=production webpack --config=webpack.mobile.js",
+    "build-ci": "npm run commit-code && npm run commit-browser && npm run commit-mobile",
     "copy-mobile-apk": "cross-env cp platforms/android/app/build/outputs/apk/debug/app-debug.apk dist/android/musiphone.debug.apk",
     "copy-mobile-apk-prod": "cross-env cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk dist/android/musiphone.release.apk",
     "release-mobile": "npm run cordova-init && cordova build --prod && npm run copy-mobile-apk",
@@ -37,7 +38,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run commit-code && npm run commit-browser && npm run commit-mobile && git add ./dist/*"
+      "pre-commit": "npm run build-ci && git add ./dist/*"
     }
   },
   "keywords": [
@@ -108,8 +109,8 @@
     "express": "^4.17.1",
     "express-static-search": "^0.1.6",
     "lodash": "^4.17.19",
-    "metastocle": "~0.2.0",
-    "museria": "~0.2.0",
+    "metastocle": "~0.2.5",
+    "museria": "~0.2.4",
     "serve-favicon": "^2.5.0",
     "slugify": "^1.4.5",
     "smooth-scrollbar": "^8.5.3",
@@ -137,6 +138,6 @@
     "url": "https://github.com/ortexx/musiphone"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   }
 }

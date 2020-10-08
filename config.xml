@@ -60,6 +60,7 @@
         </config-file>
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:usesCleartextTraffic="true"/> 
+            <application android:requestLegacyExternalStorage="true" />
         </edit-config>
         <allow-intent href="market:*" />
         <preference name="AndroidLaunchMode" value="singleTask" />
@@ -86,7 +87,7 @@
         </feature>
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
-          <preference name="iosPersistentFileLocation" value="Compatibility" />
+        <preference name="iosPersistentFileLocation" value="Compatibility" />
         <preference name="iosExtraFilesystems" value="library,library-nosync,documents,documents-nosync,cache,bundle,root" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
