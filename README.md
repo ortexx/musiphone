@@ -81,6 +81,13 @@ or the path to a js/json file:
 You can build it directly to your phone with __run-mobile-device__. 
 To get an apk file for installation use __make-mobile__ for the debug version or __make-mobile-prod__ for production ready one. The debug version you can install on the phone, but can't distribute to the markets. The production version is unsigned. To use it somewhere you have to sign it at first.
 
+## Playlist links
+There are two types of links:
+
+* **Static links**. They are stored in a decentralized database. Each playlist has a unique hash depending on its content and title. It creates a link in the player that you can share. This link is active as long as it is stored in the database. If there are more links than the space in the network, the old links will be gradually deleted. These links look like: `http://node-address/musiphone/someHash`
+
+* **Dynamic links**. These are wrappers to some external links that return a valid m3u file. This file must contain the names of the songs in the **#EXTINF**. These links look like: `http://node-address/musiphone/external:someHash`
+
 ## What are the limitations
 The maximum size of a single playlist is 100 kb, by default. You can change it using the __playlist.maxSize__ option.
 

@@ -20,7 +20,7 @@ export default class Player extends Akili.Component {
     this.history = [];
     this.filter = null;
     this.calculationDebounce = 100;
-    this.audioDelayTimeout = 10000;
+    this.audioDelayTimeout = 12000;
     this.scope.audioError = false;  
     this.scope.isLoading = false;
     this.scope.random = workStorage.getItem('playerRandom')? true: false; 
@@ -281,7 +281,7 @@ export default class Player extends Akili.Component {
     
     try {      
       await this.loadSrc(song);
-      this.play();
+      this.play();      
       store.song = {...song, isFailed: false };
       this.scope.random && this.addHistory(song);
     }
@@ -422,7 +422,7 @@ export default class Player extends Akili.Component {
     this.pause();
     media.__mediaInterval = setInterval(() => this.checkProgress(), 1000);
     const covers = ['nocover.png'];
-    song.coverLinkCache && !network.connection && covers.push(song.coverLinkCache);
+    !network.connection && /^https?:/i.test(song.coverLinkCache + '') && covers.push(song.coverLinkCache);
     network.connection && covers.push(song.coverLink);
     const parts = song.title.split(' - ');
     

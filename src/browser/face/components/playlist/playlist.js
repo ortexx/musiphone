@@ -34,7 +34,7 @@ export default class Playlist extends Akili.Component {
     this.scope.toggleCache  = this.toggleCache.bind(this);
     this.scope.removeSong = this.removeSong.bind(this);
     this.scope.selectSong = this.selectSong.bind(this);
-    this.scope.filterSongs = this.filterSongs.bind(this);  
+    this.scope.filterSongs = this.filterSongs.bind(this); 
   }
 
   compiled() { 
@@ -51,8 +51,17 @@ export default class Playlist extends Akili.Component {
 
   handleData(data) {
     this.scope.data = data;
+    this.prepareSongs();    
     this.isCompiled && this.setActiveSong(store.activeSong);
     this.isCompiled && this.setCachedSongs(store.cachedSongs);
+  }
+
+  prepareSongs() {
+    return this.scope.data.songs = this.scope.data.songs.map(s => {
+      s.isActive = !!s.isActive;
+      s.isFailed = !!s.isFailed;
+      return s;
+    });
   }
 
   filterSongs(songs, page, search) {
@@ -96,8 +105,8 @@ export default class Playlist extends Akili.Component {
     current.isFailed = song.isFailed;
   }
 
-  setActiveSong(song) {
-    this.scope.data.songs.forEach(s => s.isActive = song? s.title === song.title: false);
+  setActiveSong(song) {    
+    this.scope.data.songs.forEach(s => s.isActive = song? s.title === song.title: false);    
   }
 
   setCachedSongs(arr) {    
@@ -105,7 +114,7 @@ export default class Playlist extends Akili.Component {
     arr.forEach(s => titles[s.title] = s);
     this.scope.data.songs.forEach(s => { 
       trimCacheFromSong(s);    
-      const info = titles[s.title] || {};      
+      const info = titles[s.title] || {};
       Object.assign(s, info, { isCached: !!titles[s.title] });
     });
   }

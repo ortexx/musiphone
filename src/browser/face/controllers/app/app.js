@@ -66,7 +66,7 @@ export default class App extends Akili.Component {
 
   created() {  
     this.defaultPageTitle = 'Musiphone - decentralized music player';
-    this.externalLinkUpdateInterval = 5000;
+    this.externalLinkUpdateInterval = 10000;
     this.scope.saveToWebModal = false;
     this.scope.loadFileModal = false;
     this.scope.apiAddressModal = window.cordova && !localStorage.apiAddress;
@@ -84,23 +84,23 @@ export default class App extends Akili.Component {
     this.scope.storageUrl = `http://${ clientStorage.address || workStorage.getItem('storageAddress') }`;
     this.scope.confirm = this.confirm.bind(this);
     this.scope.addSong = this.addSong.bind(this);
-    this.scope.findSong = this.findSong.bind(this);    
-    this.scope.loadFile = this.loadFile.bind(this);    
+    this.scope.findSong = this.findSong.bind(this);
+    this.scope.loadFile = this.loadFile.bind(this);
     this.scope.saveFile = this.saveFile.bind(this);
     this.scope.importConfig = this.importConfig.bind(this);    
     this.scope.newPlaylist = this.newPlaylist.bind(this);       
-    this.scope.savePlaylist = this.savePlaylist.bind(this);       
-    this.scope.selectPlaylist = this.selectPlaylist.bind(this);    
-    this.scope.resetSearchEvent = this.resetSearchEvent.bind(this);    
+    this.scope.savePlaylist = this.savePlaylist.bind(this);
+    this.scope.selectPlaylist = this.selectPlaylist.bind(this);
+    this.scope.resetSearchEvent = this.resetSearchEvent.bind(this);
     this.scope.chooseLoadingFile = this.chooseLoadingFile.bind(this);
     this.scope.closeSaveToWebModal = this.closeSaveToWebModal.bind(this);
-    this.scope.changeEventActivity = this.changeEventActivity.bind(this); 
-    this.scope.changePlaylistOrder = this.changePlaylistOrder.bind(this); 
+    this.scope.changeEventActivity = this.changeEventActivity.bind(this);
+    this.scope.changePlaylistOrder = this.changePlaylistOrder.bind(this);
     this.scope.sharePlaylistLink = this.sharePlaylistLink.bind(this);    
-    this.scope.copyPlaylistLink = this.copyPlaylistLink.bind(this);    
-    this.scope.loadPlaylistLink = this.loadPlaylistLink.bind(this); 
-    this.scope.selectFoundSong = this.selectFoundSong.bind(this); 
-    this.scope.setApiAddress = this.setApiAddress.bind(this);         
+    this.scope.copyPlaylistLink = this.copyPlaylistLink.bind(this);
+    this.scope.loadPlaylistLink = this.loadPlaylistLink.bind(this);
+    this.scope.selectFoundSong = this.selectFoundSong.bind(this);
+    this.scope.setApiAddress = this.setApiAddress.bind(this);     
     this.resetSearchEvent();
     this.setMenu();
   } 
@@ -250,7 +250,7 @@ export default class App extends Akili.Component {
   }
 
   async handlePlaylists(playlists) {      
-    this.scope.playlists = playlists;  
+    this.scope.playlists = playlists.map(p => ({ ...p, songs: null }));  
     workStorage.setItem('playlists', JSON.stringify(preparePlaylistsToExport(playlists))); 
     await cleanUpCache();
   }
@@ -383,7 +383,7 @@ export default class App extends Akili.Component {
     this.scope.loadPlaylistModal = false;
 
     if(found) {
-      return this.selectPlaylist(found);
+      return this.selectPlaylist(found.hash);
     }
 
     clearInterval(this.externalInterval);
@@ -406,15 +406,15 @@ export default class App extends Akili.Component {
     return blobTo(file, 'readAsText');
   }
 
-  async selectPlaylist(playlist) {
+  async selectPlaylist(hash) {
     clearInterval(this.externalInterval);
 
-    if(!playlist) {
+    if(!hash) {
       store.activePlaylist = createPlaylist();
       return;
     }
     
-    await router.reload({ hash: playlist.hash }, {}, undefined, { reload: true, saveScrollPosition: true });
+    await router.reload({ hash}, {}, undefined, { reload: true, saveScrollPosition: true });
   }
 
   async postPlaylist(playlist) {
@@ -460,7 +460,7 @@ export default class App extends Akili.Component {
         songs: store.activePlaylist.songs
       });
       this.scope.saveToWebModal = false;
-      await this.selectPlaylist(playlist);
+      await this.selectPlaylist(playlist.hash);
     }
     catch(err) {
       store.event = { err };

@@ -55,15 +55,14 @@ export default class Playlists extends Akili.Component {
   }
 
   selectPlaylist(playlist) {   
-    let pl = null;
+    let hash = null;
 
     if(playlist) {
       playlist.isLoading = true;
-      pl = {...playlist};
-      delete pl._title;
+      hash = playlist.hash;
     }
     
-    this.attrs.onSelect.trigger(pl);
+    this.attrs.onSelect.trigger(hash);
   }
 
   removePlaylist(playlist) { 

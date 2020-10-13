@@ -77,17 +77,19 @@
             </a>
           </span>               
         </div>
-        <if is="${ !window.cordova }" class="player-volume d-none d-sm-block mr-5">
-          <input 
-            type="range" 
-            class="form-control-range" 
-            min="0" 
-            max="1" 
-            step="0.01" 
-            value="${ this.volume }" 
-            on-input="${ this.setVolume(event.target.value) }"
-          >
-          <div style="width: ${ this.volume * 100 }%"></div>
+        <if is="${ !window.cordova }">
+          <div class="player-volume d-none d-sm-block mr-5">
+            <input 
+              type="range" 
+              class="form-control-range" 
+              min="0" 
+              max="1" 
+              step="0.01" 
+              value="${ this.volume }" 
+              on-input="${ this.setVolume(event.target.value) }"
+            >
+            <div style="width: ${ this.volume * 100 }%"></div>
+          </div>        
         </if>
         <div class="player-close">
           <a 
