@@ -34,11 +34,11 @@ removeMobileHovers();
 
 document.addEventListener(window.cordova? 'deviceready': 'DOMContentLoaded', async () => {
   try {  
-    if(window.cordova) {   
+    if(window.cordova) {
       window.cordova.plugins.backgroundMode.enable();     
       document.addEventListener("backbutton", () => {
         window.cordova.plugins.backgroundMode.moveToBackground();
-      }, false);
+      }, false);      
     }
 
     router.init('/musiphone', location.pathname.match(/\.html$/));   

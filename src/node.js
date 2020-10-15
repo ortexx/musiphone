@@ -9,7 +9,7 @@ const pack = require('../package.json');
 module.exports = (Parent) => {  
   return class NodeMusiphone extends (Parent || NodeMetastocle) {
     static get version () { return pack.version }
-    static get codename () { return 'musiphone' }
+    static get codename () { return pack.name }
     static get ServerTransport () { return ServerExpressMuseria }
 
      /**

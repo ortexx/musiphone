@@ -21,6 +21,7 @@ export default class Player extends Akili.Component {
     this.filter = null;
     this.calculationDebounce = 100;
     this.audioDelayTimeout = 12000;
+    this.scope.song = null;
     this.scope.audioError = false;  
     this.scope.isLoading = false;
     this.scope.random = workStorage.getItem('playerRandom')? true: false; 
@@ -64,12 +65,13 @@ export default class Player extends Akili.Component {
   }
 
   handleActivePlaylist() {
-    this.setInfo();
+    this.setInfoWithControls();
     this.calculatePlayerPosition(); 
   }
 
   closePlayer() {
     this.stopLoading();
+    this.scope.song = null;
     store.isPlayerVisible = false;
     store.activeSong = null;
     store.pageTitle = null;
@@ -137,7 +139,7 @@ export default class Player extends Akili.Component {
   toggleRandom() {
     this.scope.random = !this.scope.random; 
     this.history = this.scope.random && this.scope.song? [this.scope.song]: [];
-    this.setInfo();
+    this.setInfoWithControls();
 
     if(this.scope.random) {
       workStorage.setItem('playerRandom', 'true');      
@@ -207,6 +209,11 @@ export default class Player extends Akili.Component {
 
   }
 
+  setInfoWithControls() {
+    this.setInfo();
+    window.cordova && this.scope.song && this.setControlsMobile(this.scope.song);
+  }
+
   setInfo() {
     const titles = {};
     const song = this.scope.song; 
@@ -223,7 +230,7 @@ export default class Player extends Akili.Component {
       return;
     }
 
-    if(this.history.length && last.title === song.title && !isPlaying)  {
+    if(this.history.length && last.title === song.title && !isPlaying) {
       this.history.pop();
     }
 
@@ -280,8 +287,13 @@ export default class Player extends Akili.Component {
     this.setInfo();
     
     try {      
-      await this.loadSrc(song);
-      this.play();      
+      const result = await this.loadSrc(song);
+      
+      if(result === false) {
+        return;
+      }
+
+      this.play();
       store.song = {...song, isFailed: false };
       this.scope.random && this.addHistory(song);
     }
@@ -289,28 +301,31 @@ export default class Player extends Akili.Component {
       //eslint-disable-next-line no-console
       console.error(err);
       store.song = {...song, isFailed: true };
-      this.setAudioError(); 
       this.failNextSongTimeout = setTimeout(() => this.setNextSong(), 1000);        
     }
   }
 
   async loadSrc(song) {
     this.scope.isLoading = true;
+    let result;
+
     try {
-      window.cordova? await this.loadSrcMobile(song): await this.loadSrcBrowser(song);
+      result = window.cordova? await this.loadSrcMobile(song): await this.loadSrcBrowser(song);
     }
     catch(err) {
       this.stopLoading(); 
       throw err;
     }
+
     this.scope.isLoading = false;
+    return result;
   }
 
   stopLoading() {
     this.scope.audioError = false;
     this.scope.isPlaying = false;
     this.scope.isLoading = false;
-    this.failNextSongTimeout && clearTimeout(this.failNextSongTimeout);
+    clearTimeout(this.failNextSongTimeout);
     this.releaseMedia();
   }
 
@@ -321,13 +336,14 @@ export default class Player extends Akili.Component {
   releaseMediaMobile(media) {
     media = media || this.media;
 
-    if(!media) {
+    if(!media || media.__released) {
       return;
     }
 
     clearInterval(media.__mediaInterval);
     clearTimeout(media.__delayTimeout);
     media.__releasing = true;
+    media.stop()
     media.release();
     delete media.__releasing;
     media.__released = true;
@@ -347,25 +363,21 @@ export default class Player extends Akili.Component {
   async loadSrcBrowser(song) {    
     await new Promise((resolve, reject) => {
       this.elAudio.src = song.audioLinkCache || song.audioLink;
-
       this.listenAudioLoadedMetaData = () => {
         const lsPlayerVolume = workStorage.getItem('playerVolume');
         this.setVolume(lsPlayerVolume === null? this.volume: lsPlayerVolume);
         this.elAudio.addEventListener("timeupdate", this.listenAudioTimeUpdate); 
         this.elAudio.__resolved = true;  
         clearTimeout(this.elAudio.__delayTimeout);
-        resolve();
+        resolve(true);
       };
-
       this.listenAudioTimeUpdate = () => {
         this.checkProgress();
         this.checkBufferProgress();
       };
-
       this.listenAudioError = () => {
         reject(new Error('Audio not found'));
-      };
-      
+      };      
       this.elAudio.addEventListener("error", this.listenAudioError); 
       this.elAudio.addEventListener('loadedmetadata', this.listenAudioLoadedMetaData);
       this.elAudio.__delayTimeout = setTimeout(() => {
@@ -379,10 +391,9 @@ export default class Player extends Akili.Component {
 
   async loadSrcMobile(song) {
     let media;
-
-    await new Promise((resolve, reject) => {      
-      media = this.media = new Media(song.audioLinkCache || song.audioLink, () => {}, (err) => { 
-        reject(new Error(err.message || 'Wrong audio file'));
+    const result = await new Promise((resolve, reject) => {      
+      media = this.media = new Media(song.audioLinkCache || song.audioLink, () => {}, (err) => {
+        err.code !== 0? reject(new Error(err.message || 'Wrong audio file')): resolve(false);
       }, (status) => {
         if(media.__releasing || media.__released) {
           return;
@@ -390,7 +401,7 @@ export default class Player extends Akili.Component {
 
         if(media !== this.media) {
           this.releaseMediaMobile(media);
-          return resolve();
+          return resolve(false);          
         }
 
         const prevStatus = this.scope.isPlaying;
@@ -406,8 +417,7 @@ export default class Player extends Akili.Component {
         
         if(status == 2 && !media.__resolved) {
           clearTimeout(media.__delayTimeout);
-          media.__resolved = true;
-          resolve();
+          resolve(media.__resolved = true);
         }
       });
       media.__delayTimeout = setTimeout(() => {
@@ -419,8 +429,17 @@ export default class Player extends Akili.Component {
       this.play();
     });
 
+    if(result === false) {
+      return result;
+    }
+
     this.pause();
-    media.__mediaInterval = setInterval(() => this.checkProgress(), 1000);
+    media.__mediaInterval = setInterval(() => this.checkProgress(), 1000);  
+    this.setControlsMobile(song);
+    return result;
+  }
+
+  setControlsMobile(song) {
     const covers = ['nocover.png'];
     !network.connection && /^https?:/i.test(song.coverLinkCache + '') && covers.push(song.coverLinkCache);
     network.connection && covers.push(song.coverLink);
@@ -432,10 +451,10 @@ export default class Player extends Akili.Component {
         artist: parts[0],
         dismissable: false,
         cover: covers[i],
-        hasPrev: true,
-        hasNext: true
+        hasPrev: !!this.scope.prevSong,
+        hasNext: !!this.scope.nextSong
       });
-    }    
+    }  
 
     MusicControls.subscribe(action => {
       const parsed = JSON.parse(action);
@@ -450,10 +469,10 @@ export default class Player extends Akili.Component {
       else if(message == 'music-controls-previous' || message == 'music-controls-media-button-previous') {
         this.setPrevSong();
       }
-      else if(message == 'music-controls-pause') {
+      else if(message == 'music-controls-pause' || message == 'music-controls-media-button-pause') {
         this.pause();
       }
-      else if(message == 'music-controls-play') {
+      else if(message == 'music-controls-play'  || message == 'music-controls-media-button-play') {
         this.play();
       }
       else if(message == 'music-controls-seek-to') {
@@ -579,10 +598,5 @@ export default class Player extends Akili.Component {
 
   getProgressWidth() {
     return this.elProgress.offsetWidth
-  }
-
-  setAudioError() {
-    this.scope.isPlaying = false;
-    this.scope.audioError = true;
   }
 }

@@ -338,7 +338,7 @@ export function parsePlaylist(text) {
     }
 
     if(ext[0] == '#EXTINF') {
-      lastSongTitle = (ext[1] || '').split(',')[1];        
+      lastSongTitle = (ext[1] || '').split(',').slice(1).join(',');        
       continue;
     }
 
