@@ -2,9 +2,6 @@ import './song-card.scss'
 import Akili from 'akili';
 import utils from 'akili/src/utils';
 
-/**
- * Song card
- */
 export default class SongCard extends Akili.Component {
   static template = require('./song-card.html');
   static events = ['add', 'remove', 'cache'];

@@ -18,9 +18,9 @@ export default class Scroller extends Akili.Component {
     window.addEventListener('resize', this.listenerResize);
   }
 
-  removed() {    
-    this.parent.removeEventListener('scroll', this.listenerScroll);
+  removed() {
     window.removeEventListener('resize', this.listenerResize);
+    this.parent.removeEventListener('scroll', this.listenerScroll);    
   }
 
   handleDebounce(debounce = 100) {

@@ -86,10 +86,10 @@ There are two types of links:
 
 * **Static links**. They are stored in a decentralized database. Each playlist has a unique hash depending on its content and title. It creates a link in the player that you can share. This link is active as long as it is stored in the database. If there are more links than the space in the network, the old links will be gradually deleted. These links look like: `http://node-address/musiphone/someHash`
 
-* **Dynamic links**. These are wrappers to some external links that return a valid m3u file. This file must contain the names of the songs in the **#EXTINF**. These links look like: `http://node-address/musiphone/external:someHash`
+* **Dynamic links**. These are wrappers to some external links that return a valid m3u file. This file must contain song titles in the **#EXTINF**. These links look like: `http://node-address/musiphone/external:someHash`
 
 ## What are the limitations
-The maximum size of a single playlist is 100 kb, by default. You can change it using the __playlist.maxSize__ option.
+The maximum size of a playlist is 100 kb, by default. You can change it using the __playlist.maxSize__ option.
 
 ## What are the requirements
 Look at [the metastocle requirements](https://github.com/ortexx/metastocle/#what-are-the-requirements).

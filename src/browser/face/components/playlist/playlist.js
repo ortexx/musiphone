@@ -51,7 +51,7 @@ export default class Playlist extends Akili.Component {
 
   handleData(data) {
     this.scope.data = data;
-    this.prepareSongs();    
+    this.prepareSongs();
     this.isCompiled && this.setActiveSong(store.activeSong);
     this.isCompiled && this.setCachedSongs(store.cachedSongs);
   }
@@ -72,7 +72,7 @@ export default class Playlist extends Akili.Component {
   onSortableStart(event) {
     if(this.scope.data.songs.length <= 1) {
       return event.cancel();        
-    }
+    }    
   }
 
   onSortableDrag() {
@@ -106,10 +106,10 @@ export default class Playlist extends Akili.Component {
   }
 
   setActiveSong(song) {    
-    this.scope.data.songs.forEach(s => s.isActive = song? s.title === song.title: false);    
+    this.scope.data.songs.forEach(s => s.isActive = song? s.title === song.title: false);
   }
 
-  setCachedSongs(arr) {    
+  setCachedSongs(arr) {
     const titles = {};
     arr.forEach(s => titles[s.title] = s);
     this.scope.data.songs.forEach(s => { 

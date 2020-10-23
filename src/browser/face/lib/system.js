@@ -121,3 +121,34 @@ export async function checkApiAddress(address) {
 
   return false;
 }
+
+/**
+ * Check the user selection container is passed one
+ * 
+ * @async
+ * @param {Element} el
+ * @returns {boolean}
+ */
+export function checkSelection(el) {
+  const selection = window.getSelection();
+  
+  if(selection == '') {
+    return false;
+  }
+
+  if(!el) {
+    return true;
+  }
+
+  let current = selection.anchorNode;
+
+  while (current) {
+    if (el === current) {
+      return true;
+    }
+
+    current = current.parentElement;
+  }
+
+  return false;
+}

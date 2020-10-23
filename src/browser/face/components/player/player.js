@@ -3,6 +3,7 @@ import Akili from 'akili';
 import utils from 'akili/src/utils';
 import store from 'akili/src/services/store';
 import { getCache, excludeCacheFromSong } from '../../lib/cache';
+import { checkSelection } from '../../lib/system';
 import network from '../../lib/network';
 
 export default class Player extends Akili.Component {
@@ -21,16 +22,18 @@ export default class Player extends Akili.Component {
     this.filter = null;
     this.calculationDebounce = 100;
     this.audioDelayTimeout = 12000;
-    this.scope.song = null;
-    this.scope.audioError = false;  
+    this.prevSongBorderTime = 10;
+    this.scope.song = null; 
     this.scope.isLoading = false;
+    this.scope.hasPrevSong = false;
+    this.scope.hasNextSong = false;
     this.scope.random = workStorage.getItem('playerRandom')? true: false; 
     this.scope.repeat = workStorage.getItem('playerRepeat')? true: false;  
     this.scope.closePlayer = this.closePlayer.bind(this);
     this.scope.toggleRandom = this.toggleRandom.bind(this);
     this.scope.toggleRepeat = this.toggleRepeat.bind(this);      
     this.scope.setPrevSong = this.setPrevSong.bind(this);    
-    this.scope.setNextSong = this.setNextSong.bind(this);
+    this.scope.setNextSong = this.setNextSong.bind(this);   
     this.scope.play = this.play.bind(this);
     this.scope.setVolume = this.setVolume.bind(this);
     this.scope.pause = this.pause.bind(this); 
@@ -40,11 +43,11 @@ export default class Player extends Akili.Component {
     this.elProgress = this.el.querySelector('.player-progress');
   }
 
-  compiled() {
+  compiled() { 
     this.store('isPlayerVisible', this.setPlayerVisibility);
     this.store('activePlaylist', this.handleActivePlaylist); 
     this.store('activeSong', this.changeActiveSong);
-    this.elProgress.addEventListener('click', this.setProgress.bind(this));   
+    this.elProgress.addEventListener('click', this.setProgress.bind(this)); 
     this.elAudio.addEventListener('play', () => this.scope.isPlaying = true);
     this.elAudio.addEventListener('pause', () => this.scope.isPlaying = false);
     this.elAudio.addEventListener('ended', this.onMusicEnd.bind(this));
@@ -65,7 +68,7 @@ export default class Player extends Akili.Component {
   }
 
   handleActivePlaylist() {
-    this.setInfoWithControls();
+    this.setInfo();
     this.calculatePlayerPosition(); 
   }
 
@@ -120,6 +123,10 @@ export default class Player extends Akili.Component {
   }
 
   setNextSong() {
+    if(this.checkNextSongAsCurrent()) {
+      return store.activeSong = this.scope.song;
+    }
+
     if(!this.scope.nextSong) {
       return;
     }
@@ -128,6 +135,10 @@ export default class Player extends Akili.Component {
   }
 
   setPrevSong() {
+    if(this.checkPrevSongAsCurrent()) {
+      return store.activeSong = this.scope.song;
+    }
+
     if(!this.scope.prevSong) {
       return;
     }
@@ -138,8 +149,7 @@ export default class Player extends Akili.Component {
 
   toggleRandom() {
     this.scope.random = !this.scope.random; 
-    this.history = this.scope.random && this.scope.song? [this.scope.song]: [];
-    this.setInfoWithControls();
+    this.setInfo();
 
     if(this.scope.random) {
       workStorage.setItem('playerRandom', 'true');      
@@ -206,13 +216,7 @@ export default class Player extends Akili.Component {
     return store.activePlaylist.songs.filter(song => {
       return song.title !== title && (network.connection || getCache(song.title));
     });
-
-  }
-
-  setInfoWithControls() {
-    this.setInfo();
-    window.cordova && this.scope.song && this.setControlsMobile(this.scope.song);
-  }
+  }  
 
   setInfo() {
     const titles = {};
@@ -285,6 +289,8 @@ export default class Player extends Akili.Component {
     this.scope.progress = 0;
     this.scope.buffer = 0;
     this.setInfo();
+    this.setPrevState();
+    this.setNextState();
     
     try {      
       const result = await this.loadSrc(song);
@@ -293,9 +299,9 @@ export default class Player extends Akili.Component {
         return;
       }
 
-      this.play();
       store.song = {...song, isFailed: false };
       this.scope.random && this.addHistory(song);
+      this.play();      
     }
     catch(err) {
       //eslint-disable-next-line no-console
@@ -322,7 +328,6 @@ export default class Player extends Akili.Component {
   }
 
   stopLoading() {
-    this.scope.audioError = false;
     this.scope.isPlaying = false;
     this.scope.isLoading = false;
     clearTimeout(this.failNextSongTimeout);
@@ -336,13 +341,13 @@ export default class Player extends Akili.Component {
   releaseMediaMobile(media) {
     media = media || this.media;
 
-    if(!media || media.__released) {
+    if(!media || media.__released || media.__releasing) {
       return;
     }
 
+    media.__releasing = true;
     clearInterval(media.__mediaInterval);
     clearTimeout(media.__delayTimeout);
-    media.__releasing = true;
     media.stop()
     media.release();
     delete media.__releasing;
@@ -434,9 +439,19 @@ export default class Player extends Akili.Component {
     }
 
     this.pause();
-    media.__mediaInterval = setInterval(() => this.checkProgress(), 1000);  
-    this.setControlsMobile(song);
+    media.__currentTime = 0;
+    media.__mediaInterval = setInterval(async () => {      
+      this.checkProgress();
+      media.__currentTime = await new Promise((resolve) => {
+        this.media.getCurrentPosition(p => resolve(p < 0? 0: p), () => resolve(0));
+      });
+    }, 1000);
+    this.setControls(song);
     return result;
+  }
+
+  setControls(song) {
+    window.cordova && this.setControlsMobile(song);
   }
 
   setControlsMobile(song) {
@@ -451,8 +466,8 @@ export default class Player extends Akili.Component {
         artist: parts[0],
         dismissable: false,
         cover: covers[i],
-        hasPrev: !!this.scope.prevSong,
-        hasNext: !!this.scope.nextSong
+        hasPrev: true,
+        hasNext: true
       });
     }  
 
@@ -522,9 +537,37 @@ export default class Player extends Akili.Component {
     workStorage.setItem('playerVolume', val);
   }
 
+  checkPrevSongAsCurrent() {
+    return this.scope.song && (this.getCurrentTime() > this.prevSongBorderTime || !this.scope.prevSong);
+  }
+
+  checkNextSongAsCurrent() {
+    return this.scope.song && !this.scope.nextSong;
+  }
+
+  setPrevState() {
+    if(this.checkPrevSongAsCurrent()) {
+      this.scope.hasPrevSong = true;
+      return;
+    }
+
+    this.scope.hasPrevSong = !!this.scope.prevSong;
+  }
+
+  setNextState() {
+    if(this.checkNextSongAsCurrent()) {
+      this.scope.hasNextSong = true;
+      return;
+    }
+
+    this.scope.hasNextSong = !!this.scope.nextSong;
+  }
+
   checkProgress() {
     store.pageTitle = this.scope.song.title; 
-    window.cordova? this.checkProgressMobile(): this.checkProgressBrowser(); 
+    window.cordova? this.checkProgressMobile(): this.checkProgressBrowser();
+    this.setPrevState();
+    this.setNextState();
   }
 
   checkProgressBrowser() {
@@ -568,11 +611,13 @@ export default class Player extends Akili.Component {
   }
 
   setProgress(event) {
-    if(this.scope.audioError) {
+    if(checkSelection(this.elProgress)) {
       return;
     }
 
-    window.cordova? this.setProgressMobile(event): this.setProgressBrowser(event); 
+    window.cordova? this.setProgressMobile(event): this.setProgressBrowser(event);
+    this.setPrevState();
+    this.setNextState();
   }
 
   setProgressBrowser(event) {
@@ -596,7 +641,19 @@ export default class Player extends Akili.Component {
     this.play(); 
   }
 
+  getCurrentTime() {
+    return window.cordova? this.getCurrentTimeMobile(): this.getCurrentTimeBrowser(); 
+  }
+
+  getCurrentTimeMobile() {
+    return this.media? this.media.__currentTime: 0;  
+  }
+
+  getCurrentTimeBrowser() {
+    return this.elAudio.currentTime;
+  }
+
   getProgressWidth() {
-    return this.elProgress.offsetWidth
+    return this.elProgress.offsetWidth;
   }
 }

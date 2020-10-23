@@ -1,5 +1,8 @@
 <div class="playlists">
-  <scrollbar on-touchstart="${ event.stopPropagation() }">
+  <scrollbar 
+    on-touchstart="${ event.stopPropagation() }" 
+    on-touchmove="${ event.stopPropagation() }"
+  >
     <ul in="${ this.data }" class="playlists-list">
       <li 
         on-click="${ this.selectPlaylist(this.loopValue) }" 

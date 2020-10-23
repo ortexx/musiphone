@@ -106,6 +106,7 @@ export default class App extends Akili.Component {
   } 
 
   async compiled() {
+    
     if(this.transition.data) {            
       store.activePlaylist = utils.copy(addPlaylist(this.transition.data));
     }
@@ -127,7 +128,7 @@ export default class App extends Akili.Component {
     clearInterval(this.externalInterval);
     isExternal && (this.externalInterval = setInterval(async () => {
       const playlist = await getExternalPlaylist(store.activePlaylist.hash); 
-
+      
       if(!playlist || comparePlaylists(playlist, utils.copy(store.activePlaylist))) {
         return;
       }
@@ -232,7 +233,7 @@ export default class App extends Akili.Component {
       playlist.link && 
       !this.disableActivePlaylist &&
       changed
-    ) {      
+    ) {
       delete store.activePlaylist.__target.link;
       delete store.activePlaylist.__target.hash;
       delete playlist.link;
@@ -243,7 +244,7 @@ export default class App extends Akili.Component {
     
     this.disableActivePlaylist = false;
     this.scope.saveToWebTitle = playlist.title;
-    changed && (this.lastActivePlaylist = playlist);
+    changed && (this.lastActivePlaylist = utils.copy(playlist));
     this.scope.activePlaylist = playlist;      
     workStorage.setItem('activePlaylist', JSON.stringify(preparePlaylistToExport(playlist)));  
     await cleanUpCache();
@@ -411,10 +412,9 @@ export default class App extends Akili.Component {
 
     if(!hash) {
       store.activePlaylist = createPlaylist();
-      return;
     }
     
-    await router.reload({ hash}, {}, undefined, { reload: true, saveScrollPosition: true });
+    await router.reload({ hash }, {}, undefined, { reload: true, saveScrollPosition: true });
   }
 
   async postPlaylist(playlist) {
@@ -484,7 +484,7 @@ export default class App extends Akili.Component {
 
       if(!await checkApiAddress(address)) {
         throw err;
-      }      
+      }
     }
     catch(err) {
       return store.event = { err };

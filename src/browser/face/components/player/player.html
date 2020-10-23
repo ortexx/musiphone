@@ -36,23 +36,24 @@
           <else>
             <a 
               href="javascript:;" 
-              on-click="${ this.pause() }">
+              on-click="${ this.pause() }"
+            >
               <i class="fas fa-pause"></i>
             </a>
           </else>
           <span>
             <a 
               href="javascript:;"
-              disabled="${ !this.prevSong }"
+              disabled="${ !this.hasPrevSong }"
               on-click="${ this.setPrevSong() }"
             >
               <i class="fas fa-backward"></i>
             </a>
           </span>
           <span>
-            <a 
-              disabled="${ !this.nextSong }"
+            <a               
               href="javascript:;"
+              disabled="${ !this.hasNextSong }"
               on-click="${ this.setNextSong() }"
             >
               <i class="fas fa-forward"></i>
