@@ -384,10 +384,10 @@ export default class App extends Akili.Component {
       return store.event = { err: new Error('There are not valid links in the file') };
     }
 
-    const found = findPlaylist(title, songs.map(s => s.title));
+    const found = findPlaylist(title, songs.map(s => s.title), { ignoreExternal: true });
     this.scope.loadPlaylistModal = false;
 
-    if(found) {
+    if(found && !isExternalHash(found.hash)) {
       return this.selectPlaylist(found.hash);
     }
 

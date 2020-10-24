@@ -265,11 +265,17 @@ export async function parsePlaylistLink(link) {
  * 
  * @param {string} title 
  * @param {string[]} songs 
+ * @param {object} [options]
+ * @param {boolean} [options.ignoreExternal]
  * @return {object}
  */
-export function findPlaylist(title, songs) {
+export function findPlaylist(title, songs, options = {}) {
   for(let i = 0; i < store.playlists.length; i ++) {
     const playlist = store.playlists[i];
+
+    if(options.ignoreExternal && isExternalHash(playlist.hash)) {
+      continue;
+    }
 
     if(playlist.title !== title) {
       continue;
@@ -319,6 +325,7 @@ export function parsePlaylist(text) {
   const songs = [];
   let title = '';
   let lastSongTitle = '';
+  let prevIsInf = false;
 
   for(let i = 0; i < lines.length; i++) {    
     const line = lines[i];
@@ -326,8 +333,7 @@ export function parsePlaylist(text) {
     if(!line.trim()) {
       continue;
     }
-
-    const info = url.parse(line);
+    
     const ext = line.split(':'); 
     let songTitle = lastSongTitle;
     lastSongTitle = '';
@@ -337,20 +343,29 @@ export function parsePlaylist(text) {
       continue;
     }
 
-    if(ext[0] == '#EXTINF') {
-      lastSongTitle = (ext[1] || '').split(',').slice(1).join(',');        
-      continue;
+    if(ext[0] == '#EXTINF') { 
+      if(prevIsInf && songTitle) {
+        i--;
+      }
+      else {
+        lastSongTitle = (ext[1] || '').split(',').slice(1).join(',');
+        prevIsInf = true; 
+
+        if(i != lines.length - 1) {
+          continue;
+        }
+
+        songTitle = lastSongTitle;
+      }
     }
 
-    if(!info || !info.query) {
-      continue;
-    }
+    prevIsInf = false;
+    const info = url.parse(line);
 
-    const query = qs.parse(info.query);
-
-    if(query.title && !songTitle) {
-      songTitle = query.title;
-    }
+    if(info && info.query) {
+      const query = qs.parse(info.query);
+      query.title && !songTitle && (songTitle = query.title);
+    }   
 
     if(!songTitle || !clientStorage.constructor.utils.isSongTitle(songTitle)) {
       continue;
