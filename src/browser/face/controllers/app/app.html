@@ -157,14 +157,16 @@
                     <button 
                       type="submit"
                       class="btn form-control btn-primary"
+                      disabled="${ this.isPlaylistLoading }"
                     >
-                      Confirm
+                      Confirm <i hidden="${ !this.isPlaylistLoading }" class="fas fa-circle-notch fa-spin"></i>
                     </button>  
                     <div class="playlist-load-or my-3">or</div>
                     <button 
                       type="button"
                       class="btn form-control btn-lg btn-primary"
                       on-click="${ this.chooseLoadingFile(); }"
+                      disabled="${ this.isPlaylistLoading }"
                     > 
                       load from file
                     </button>
@@ -271,8 +273,9 @@
                   <button 
                     type="submit"
                     class="btn form-control btn-secondary"
+                    disabled="${ this.isPlaylistSaving }"
                   >
-                    Confirm
+                    Confirm <i hidden="${ !this.isPlaylistSaving }" class="fas fa-circle-notch fa-spin"></i>
                   </button>  
                 </form>   
               </modal-window>

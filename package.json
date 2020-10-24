@@ -1,6 +1,6 @@
 {
   "name": "musiphone",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
@@ -109,7 +109,7 @@
     "express": "^4.17.1",
     "express-static-search": "^0.1.6",
     "lodash": "^4.17.19",
-    "metastocle": "^0.2.11",
+    "metastocle": "^0.2.12",
     "museria": "^0.2.13",
     "serve-favicon": "^2.5.0",
     "slugify": "^1.4.5",

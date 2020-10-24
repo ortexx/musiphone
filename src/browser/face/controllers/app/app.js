@@ -74,6 +74,8 @@ export default class App extends Akili.Component {
     this.scope.linkIsBlinking = false;
     this.scope.menuModal = false; 
     this.scope.isConfirming = false;
+    this.scope.isPlaylistSaving = false;
+    this.scope.isPlaylistLoading = false;
     this.scope.wrongPlaylistHash = this.transition.data === null;
     this.scope.searchInputValue = '';  
     this.scope.loadPlaylistInputValue = '';   
@@ -121,7 +123,7 @@ export default class App extends Akili.Component {
     this.store('activePlaylist', this.handleActivePlaylist);    
     const isExternal = isExternalHash(store.activePlaylist.hash);
 
-    if(this.transition.data) {      
+    if(this.transition.data) {
       !isExternal && await this.postPlaylist(store.activePlaylist);
     }    
 
@@ -358,7 +360,9 @@ export default class App extends Akili.Component {
   }
 
   async loadPlaylistLink() {
+    this.scope.isPlaylistLoading = true;
     const hash = await parsePlaylistLink(this.scope.loadPlaylistInputValue);
+    this.scope.isPlaylistLoading = false;
 
     if(!hash) {
       return store.event = { err: new Error('Wrong playlist link') };
@@ -454,16 +458,20 @@ export default class App extends Akili.Component {
   }  
 
   async savePlaylist() {
+    this.scope.isPlaylistSaving = true;
+
     try {
       const playlist = await this.postPlaylist({ 
         title: this.scope.saveToWebTitle,
         songs: store.activePlaylist.songs
       });
       this.scope.saveToWebModal = false;
+      this.scope.isPlaylistSaving = false;
       await this.selectPlaylist(playlist.hash);
     }
     catch(err) {
       store.event = { err };
+      this.scope.isPlaylistSaving = false;
     }
   }
 

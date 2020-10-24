@@ -32,9 +32,9 @@ const Client = require('musiphone').Client;
     await client.init();    
     const title = 'Playlist title';
     const songs = [
-      'Direct - Opal',
-      `Parachute Youth - Can't Get Better Than This`,
-      'Mattafix - Big City Life'
+      'Onycs - Eden',
+      'Onycs - Shine',
+      'Onycs - Timeless'      
     ];
 
     // Add the playlist

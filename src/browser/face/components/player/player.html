@@ -1,4 +1,4 @@
-<div hidden="${ !this.isPlayerVisible }">
+<div class="${ utils.class({ invisible: !this.isPlayerVisible }) }">
   <div class="player-footer"></div>
   <div class="player" on-touchstart="${ event.stopPropagation() }">  
     <audio></audio>
