@@ -10,18 +10,47 @@
       >
         <tooltip message="${ this.loopValue._title }">
           <span class="ellipsis title">${ this.loopValue._title }</span>
-        </tooltip>        
+        </tooltip>
+        <a
+          hidden="${ this.loopValue.isCaching || this.loopValue.cached == this.loopValue.songs.length }"
+          href="javascript:;" 
+          on-click="${ event.stopPropagation(); this.addCache(this.loopValue) }"
+        >
+          <i class="fa fa-arrow-down"></i>
+        </a>
+        <a
+          hidden="${ this.loopValue.isCaching || this.loopValue.cached != this.loopValue.songs.length }"
+          class="active"
+          href="javascript:;" 
+          on-click="${ event.stopPropagation(); this.cachePlaylist(this.loopValue) }"
+        >
+          <i class="fa fa-arrow-down"></i>
+        </a>
+        <a
+          hidden="${ this.loopValue.isCaching || (!this.loopValue.cached || this.loopValue.cached == this.loopValue.songs.length) }"
+          href="javascript:;" 
+          on-click="${ event.stopPropagation(); this.removeCache(this.loopValue) }"
+        >
+          <i class="fa fa-arrow-up"></i>
+        </a>
+        <a 
+          hidden="${ !this.loopValue.isCaching }"
+          href="javascript:;" 
+          on-click="${ event.stopPropagation(); this.loopValue.isCaching = false }"
+        >
+          <i class="fa fa-spinner fa-spin"></i>
+        </a>
         <a
           hidden="${ this.loopValue.isLoading }"
-          class="playlists-remove-btn"
+          class="playlist-remove"
           href="javascript:;" 
-          on-click="${ event.preventDefault(); event.stopPropagation(); this.removePlaylist(this.loopValue) }"
+          on-click="${ event.stopPropagation(); this.removePlaylist(this.loopValue) }"
         >
           <i class="fa fa-times"></i>
         </a>
         <a hidden="${ !this.loopValue.isLoading }">
-          <i class="fa fa-spinner fa-spin"></i>
-        </a>
+          <i class="fas fa-circle-notch fa-spin"></i>
+        </a>        
       </li>
     </ul>
   </scrollbar>

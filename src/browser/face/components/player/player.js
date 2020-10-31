@@ -352,6 +352,7 @@ export default class Player extends Akili.Component {
     media.release();
     delete media.__releasing;
     media.__released = true;
+    this.media = null;
   }
 
   releaseMediaBrowser() {
@@ -406,28 +407,28 @@ export default class Player extends Akili.Component {
 
         if(media !== this.media) {
           this.releaseMediaMobile(media);
-          return resolve(false);          
+          return resolve(false);
         }
 
         const prevStatus = this.scope.isPlaying;
         this.scope.isPlaying = status == 2 || status == 1;
         
         if(status == 4 && prevStatus) {
-          this.onMusicEnd();
+          return this.onMusicEnd();
         }
 
-        if(status == 2 || status == 3) {          
+        if(media.__resolved && (status == 2 || status == 3)) {          
           MusicControls.updateIsPlaying(status == 2);
         }
         
-        if(status == 2 && !media.__resolved) {
+        if(!media.__resolved && status == 2) {
           clearTimeout(media.__delayTimeout);
           resolve(media.__resolved = true);
         }
       });
       media.__delayTimeout = setTimeout(() => {
         if(!media.__resolved) {
-          this.releaseMedia();
+          this.releaseMediaMobile(media);
           reject(new Error('Audio loading timeout'));
         }        
       }, this.audioDelayTimeout);
@@ -437,16 +438,16 @@ export default class Player extends Akili.Component {
     if(result === false) {
       return result;
     }
-
+    
     this.pause();
+    this.setControls(song);
     media.__currentTime = 0;
     media.__mediaInterval = setInterval(async () => {      
       this.checkProgress();
       media.__currentTime = await new Promise((resolve) => {
         this.media.getCurrentPosition(p => resolve(p < 0? 0: p), () => resolve(0));
       });
-    }, 1000);
-    this.setControls(song);
+    }, 1000);   
     return result;
   }
 
@@ -455,21 +456,16 @@ export default class Player extends Akili.Component {
   }
 
   setControlsMobile(song) {
-    const covers = ['nocover.png'];
-    !network.connection && /^https?:/i.test(song.coverLinkCache + '') && covers.push(song.coverLinkCache);
-    network.connection && covers.push(song.coverLink);
     const parts = song.title.split(' - ');
     
-    for(let i = 0; i < covers.length; i++) {
-      MusicControls.create({
-        track: parts[1],
-        artist: parts[0],
-        dismissable: false,
-        cover: covers[i],
-        hasPrev: true,
-        hasNext: true
-      });
-    }  
+    MusicControls.create({
+      track: parts[1],
+      artist: parts[0],
+      dismissable: false,
+      cover: song.coverLink,
+      hasPrev: true,
+      hasNext: true
+    });
 
     MusicControls.subscribe(action => {
       const parsed = JSON.parse(action);

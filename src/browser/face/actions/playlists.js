@@ -18,7 +18,7 @@ export async function getExternalPlaylist (hash) {
   const url = getPlaylistLinkFromExternalHash(hash);
 
   try {
-    const res = await request.get(url, { timeout: 3000 });
+    const res = await request.get(url, { timeout: 5000 });
     const info = parsePlaylist(res.data);
     const link = createPlaylistLink(hash);
     

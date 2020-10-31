@@ -68,13 +68,22 @@
       }      
   
       & a {
-        color: $light;
-        opacity: 0.6;
+        color: lighten($cyan, 5%);
+        opacity: 0.4;
         margin-left: 0.4em;
-        font-size: 1.1em;
+        font-size: 0.95em;
         vertical-align: middle;
+        text-decoration: none;
+
+        &.playlist-remove {
+          font-size: 1.1em;
+        }
     
         &:hover {
+          opacity: 1;
+        }
+
+        &.active {
           opacity: 1;
         }
       }    

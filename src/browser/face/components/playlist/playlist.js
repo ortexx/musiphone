@@ -102,7 +102,8 @@ export default class Playlist extends Akili.Component {
       return;
     }
     
-    current.isFailed = song.isFailed;
+    song.isFailed !== undefined && (current.isFailed = song.isFailed);
+    song.isCacheSaving !== undefined && (current.isCacheSaving = song.isCacheSaving);
   }
 
   setActiveSong(song) {    
@@ -145,6 +146,10 @@ export default class Playlist extends Akili.Component {
     }
     catch(err) {
       store.event = { err };
+    }
+
+    if(this.isRemoved) {
+      return;
     }
 
     song.isCacheSaving = false;

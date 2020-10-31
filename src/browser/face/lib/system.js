@@ -2,6 +2,7 @@ import request from 'akili/src/services/request';
 import client from '../client';
 import clientStorage from '../client-storage';
 import ClientMusiphone from '../../../../dist/musiphone.client.js';
+import network from './network';
 
 /**
  * Initialize the client initial address
@@ -11,7 +12,8 @@ import ClientMusiphone from '../../../../dist/musiphone.client.js';
  */
 export async function setClientInitialAddress() { 
   let address = localStorage.getItem('apiAddress');
-  address && typeof API_ADDRESS === 'undefined' && !await checkApiAddress(address) && localStorage.removeItem('apiAddress');    
+  const cond = address && typeof API_ADDRESS === 'undefined' && network.connection && !await checkApiAddress(address);
+  cond && localStorage.removeItem('apiAddress');
   address = getApiAddress();
   localStorage.setItem('apiAddress', address || '');
   client.address = address;
@@ -109,7 +111,7 @@ export async function initClients() {
  */
 export async function checkApiAddress(address) {
   try {
-    const res = await request.get(`http://${ address }/ping`, { json: true, timeout: 1000 });
+    const res = await request.get(`http://${ address }/ping`, { json: true, timeout: 2000 });
 
     if(typeof res.data == 'object' && res.data.address === address && res.data.version.split('-')[0] == 'musiphone') {
       return true;

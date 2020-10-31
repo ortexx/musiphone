@@ -69,13 +69,14 @@ export default class App extends Akili.Component {
     this.externalLinkUpdateInterval = 10000;
     this.scope.saveToWebModal = false;
     this.scope.loadFileModal = false;
-    this.scope.apiAddressModal = window.cordova && !localStorage.apiAddress;
+    this.scope.apiAddressModal = window.cordova && network.connection && !localStorage.apiAddress;
     this.scope.apiAddressModalUnclosable = !localStorage.apiAddress;
     this.scope.linkIsBlinking = false;
     this.scope.menuModal = false; 
     this.scope.isConfirming = false;
     this.scope.isPlaylistSaving = false;
     this.scope.isPlaylistLoading = false;
+    this.scope.isCheckingApiAddress = false;
     this.scope.wrongPlaylistHash = this.transition.data === null;
     this.scope.searchInputValue = '';  
     this.scope.loadPlaylistInputValue = '';   
@@ -107,8 +108,7 @@ export default class App extends Akili.Component {
     this.setMenu();
   } 
 
-  async compiled() {
-    
+  async compiled() {    
     if(this.transition.data) {            
       store.activePlaylist = utils.copy(addPlaylist(this.transition.data));
     }
@@ -253,7 +253,7 @@ export default class App extends Akili.Component {
   }
 
   async handlePlaylists(playlists) {      
-    this.scope.playlists = playlists.map(p => ({ ...p, songs: null }));  
+    this.scope.playlists = playlists; 
     workStorage.setItem('playlists', JSON.stringify(preparePlaylistsToExport(playlists))); 
     await cleanUpCache();
   }
@@ -478,8 +478,9 @@ export default class App extends Akili.Component {
   async setApiAddress() { 
     let address;
     const err = new Error('Api address invalid or busy');
+    this.scope.isCheckingApiAddress = true;
 
-    try {      
+    try {
       let value = this.scope.apiAddressInputValue;
       !value.match(/^http/i) && (value = `http://${ value }`);
       const info = url.parse(value);
@@ -495,6 +496,7 @@ export default class App extends Akili.Component {
       }
     }
     catch(err) {
+      this.scope.isCheckingApiAddress = false;
       return store.event = { err };
     }
 

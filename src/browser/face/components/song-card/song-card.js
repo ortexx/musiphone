@@ -16,13 +16,11 @@ export default class SongCard extends Akili.Component {
       {
         name: 'add',
         icon: 'fa-plus-circle',
-        tooltip: 'add to the playlist',
         status: true
       },
       {
         name: 'cache',
         icon: 'fa-arrow-alt-circle-down',
-        tooltip: 'save to cache',
         status: true
       },
       {
@@ -33,7 +31,6 @@ export default class SongCard extends Akili.Component {
       },     
       {
         name: 'remove',
-        tooltip: 'remove',
         icon: 'fa-times-circle',
         status: true,
       }

@@ -115,7 +115,7 @@ async __Client.prototype.getStorageAddress()__ - get the music storage address.
   * {number} __[options.timeout]__ - addition timeout
 
 async __Client.prototype.addPlaylist()__ - add the playlist to the network.
-  * {string} __[title]__ - playlist title
+  * {string} __title__ - playlist title
   * {string[]} __content__ - array with song titles to save
   * {object} __[options]__ - addition options
   * {number} __[options.timeout]__ - addition timeout

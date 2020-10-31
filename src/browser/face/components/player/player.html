@@ -1,7 +1,7 @@
 <div class="${ utils.class({ invisible: !this.isPlayerVisible }) }">
   <div class="player-footer"></div>
   <div class="player" on-touchstart="${ event.stopPropagation() }">  
-    <audio></audio>
+    <audio importance="high"></audio>
     <div class="player-progress">   
         <div class="player-progress-buffer" style="width: ${ this.buffer }px">
           <div class="player-progress-actual" style="width: ${ this.progress }px">
