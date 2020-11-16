@@ -328,8 +328,16 @@ export default class App extends Akili.Component {
   
   async downloadFileMobile(text, filename) {
     const filePath = `${ getDownloadFolder() }${ filename }`;
-    await saveTextToFile(text, filePath);
-    store.event = { message: `The file has been saved to ${ filePath }` };
+
+    try {
+      await saveTextToFile(text, filePath);
+      store.event = { message: `The file has been saved to ${ filePath }` };
+    }
+    catch(err) {
+      //eslint-disable-next-line no-console
+      console.error(err);
+      store.event = { err: new Error(`The file hasn't been saved to ${ filePath }, check the app permissions`) };
+    }    
   }
 
   async sharePlaylistLink() {

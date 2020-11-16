@@ -3,8 +3,8 @@
   <div class="player" on-touchstart="${ event.stopPropagation() }">  
     <audio importance="high"></audio>
     <div class="player-progress">   
-        <div class="player-progress-buffer" style="width: ${ this.buffer }px">
-          <div class="player-progress-actual" style="width: ${ this.progress }px">
+      <div class="player-progress-buffer" style="width: ${ this.buffer }px">
+        <div class="player-progress-actual" style="width: ${ this.progress }px">
           <div class="px-3 py-2 d-block">
             <div class="player-progress-mask">.</div>
             <div class="player-progress-title ellipsis">${ this.song? this.song.title: '' }</div>
@@ -15,7 +15,11 @@
     <div class="d-flex">
       <div class="player-image">
         <i class="fas fa-music"></i>
-        <div style='background: url("${ this.song? (this.song.coverLinkCache || this.song.coverLink): null }")'></div>
+        <img 
+          loading="viewport"
+          url="${ this.song? (this.song.coverLinkCache || this.song.coverLink): '' }"
+          hidden-error="true"
+        >
       </div>
       <div class="player-content py-3 px-3">
         <div class="player-buttons pr-3">

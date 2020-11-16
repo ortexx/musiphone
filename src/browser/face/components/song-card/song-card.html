@@ -3,9 +3,13 @@
     <div class="d-flex align-items-center">
       <div class="card-image">
         <i class="fas fa-music"></i>
-        <div style='background: url("${ this.info.coverLinkCache || this.info.coverLink }")'></div>
-      </div>          
-      <div class="py-1 px-3 card-info">        
+        <img 
+          url='${ this.info.coverLinkCache || this.info.coverLink }'
+          hidden-error="true"
+          loading="viewport"
+        >
+      </div>
+      <div class="py-1 px-3 card-info">
         <div class="ellipsis card-title">
           ${ this.info.title }
         </div>

@@ -70,7 +70,7 @@ export default class Playlist extends Akili.Component {
   }
 
   onSortableStart(event) {
-    if(this.scope.data.songs.length <= 1) {
+    if(this.scope.data.songs.length <= 1 || this.scope.songSearchValue) {
       return event.cancel();        
     }    
   }

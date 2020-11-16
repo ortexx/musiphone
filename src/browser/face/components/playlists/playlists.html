@@ -5,6 +5,7 @@
   >
     <ul in="${ this.data }" class="playlists-list">
       <li 
+        disabled="${ this.loopValue.isLoading }"
         on-click="${ this.selectPlaylist(this.loopValue) }" 
         class="${ this.loopIndex == 0 && this.highlight? 'active': '' }"
       >
