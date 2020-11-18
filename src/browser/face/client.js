@@ -1,3 +1,3 @@
 import ClientMusiphone from '../../../dist/musiphone.client.js';
-const client = new ClientMusiphone({ https: ClientMusiphone.getPageProtocol() == 'https', address: true });
+const client = new ClientMusiphone({ address: [] });
 export default client;

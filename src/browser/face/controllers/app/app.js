@@ -64,7 +64,9 @@ export default class App extends Akili.Component {
     });
   }
 
-  created() {  
+  created() { 
+    this.clientStorageAddress = clientStorage.address || workStorage.getItem('storageAddress');
+    this.scope.storageUrl = `${ clientStorage.getRequestProtocol() }://${ this.clientStorageAddress }`;
     this.defaultPageTitle = 'Musiphone - decentralized music player';
     this.externalLinkUpdateInterval = 10000;
     this.scope.saveToWebModal = false;
@@ -83,8 +85,7 @@ export default class App extends Akili.Component {
     this.scope.apiAddressInputValue = localStorage.getItem('apiAddress') || '';  
     this.scope.activePlaylist = [];
     this.scope.playlists = [];
-    this.scope.event = {};
-    this.scope.storageUrl = `http://${ clientStorage.address || workStorage.getItem('storageAddress') }`;
+    this.scope.event = {};   
     this.scope.confirm = this.confirm.bind(this);
     this.scope.addSong = this.addSong.bind(this);
     this.scope.findSong = this.findSong.bind(this);

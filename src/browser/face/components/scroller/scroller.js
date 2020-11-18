@@ -20,7 +20,8 @@ export default class Scroller extends Akili.Component {
 
   removed() {
     window.removeEventListener('resize', this.listenerResize);
-    this.parent.removeEventListener('scroll', this.listenerScroll);    
+    this.parent.removeEventListener('scroll', this.listenerScroll);
+    this.listenerScroll.removeDebounce();   
   }
 
   handleDebounce(debounce = 100) {
@@ -34,7 +35,7 @@ export default class Scroller extends Akili.Component {
     this.calculate();
   }
 
-  calculate() {    
+  calculate() {
     const height = this.getHeight();
     
     if(height != this.lastHeight) {

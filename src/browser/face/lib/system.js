@@ -111,7 +111,7 @@ export async function initClients() {
  */
 export async function checkApiAddress(address) {
   try {
-    const res = await request.get(`http://${ address }/ping`, { json: true, timeout: 2000 });
+    const res = await request.get(`${ client.getRequestProtocol() }://${ address }/ping`, { json: true, timeout: 2000 });
 
     if(typeof res.data == 'object' && res.data.address === address && res.data.version.split('-')[0] == 'musiphone') {
       return true;
