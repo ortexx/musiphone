@@ -39,7 +39,7 @@
           href="javascript:;" 
           on-click="${ event.stopPropagation(); this.cancelPlaylistCacheWorks(this.loopValue) }"
         >
-          <i class="fa fa-spinner fa-spin"></i>
+          <i class="fa fa-spinner ${ this.loopValue.uncaching? 'fa-pulse': 'fa-spin' }"></i>
         </a>
         <a
           hidden="${ this.loopValue.isLoading }"

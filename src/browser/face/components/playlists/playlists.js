@@ -30,13 +30,13 @@ export default class Playlists extends Akili.Component {
     this.store('uncachingPlaylists', this.setUncaching, { callOnStart: false });
   }
 
-  handleData(data) {
+  handleData(data) {    
     this.createTitlesInfo(data);   
     this.scope.data = data;
     this.setTitle();
     this.setCached(store.cachedSongs);
-    this.setCaching(store.cachingSongs);
-    this.setUncaching(store.uncachingSongs);
+    this.setCaching(store.cachingPlaylists);
+    this.setUncaching(store.uncachingPlaylists);
   }
 
   createTitlesInfo(data) {    
@@ -78,9 +78,9 @@ export default class Playlists extends Akili.Component {
     });
   }
 
-  setCached(arr) {
+  setCached(arr) {    
     const titles = {};
-    arr.forEach(s => titles[s.title] = s);   
+    arr.forEach(s => titles[s.title] = s);
 
     for(let i = 0; i < this.scope.data.length; i++) {
       let cached = 0;
