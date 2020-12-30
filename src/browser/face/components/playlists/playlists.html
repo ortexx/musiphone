@@ -9,18 +9,18 @@
         on-click="${ this.selectPlaylist(this.loopValue) }" 
         class="${ this.loopIndex == 0 && this.highlight? 'active': '' }"
       >
-        <tooltip message="${ this.loopValue._title }">
+        <tooltip message="${ this.loopValue._titleFull }">
           <span class="ellipsis title">${ this.loopValue._title }</span>
         </tooltip>
         <a
-          hidden="${ this.loopValue.isCaching || this.loopValue.cached == this.loopValue.songs.length }"
+          hidden="${ this.loopValue.caching || this.loopValue.uncaching  || this.loopValue.cached == this.loopValue.songs.length }"
           href="javascript:;" 
           on-click="${ event.stopPropagation(); this.addCache(this.loopValue) }"
         >
           <i class="fa fa-arrow-down"></i>
         </a>
         <a
-          hidden="${ this.loopValue.isCaching || this.loopValue.cached != this.loopValue.songs.length }"
+          hidden="${ this.loopValue.caching || this.loopValue.uncaching  || this.loopValue.cached != this.loopValue.songs.length }"
           class="active"
           href="javascript:;" 
           on-click="${ event.stopPropagation(); this.cachePlaylist(this.loopValue) }"
@@ -28,16 +28,16 @@
           <i class="fa fa-arrow-down"></i>
         </a>
         <a
-          hidden="${ this.loopValue.isCaching || (!this.loopValue.cached || this.loopValue.cached == this.loopValue.songs.length) }"
+          hidden="${ this.loopValue.caching || this.loopValue.uncaching || (!this.loopValue.cached || this.loopValue.cached == this.loopValue.songs.length) }"
           href="javascript:;" 
           on-click="${ event.stopPropagation(); this.removeCache(this.loopValue) }"
         >
           <i class="fa fa-arrow-up"></i>
         </a>
         <a 
-          hidden="${ !this.loopValue.isCaching }"
+          hidden="${ !this.loopValue.caching && !this.loopValue.uncaching }"
           href="javascript:;" 
-          on-click="${ event.stopPropagation(); this.loopValue.isCaching = false }"
+          on-click="${ event.stopPropagation(); this.cancelPlaylistCacheWorks(this.loopValue) }"
         >
           <i class="fa fa-spinner fa-spin"></i>
         </a>

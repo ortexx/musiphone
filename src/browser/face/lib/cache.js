@@ -2,6 +2,7 @@ import store from 'akili/src/services/store';
 import utils from 'akili/src/utils';
 import clientStorage from '../client-storage';
 import { getDatabase } from './database';
+import { getPlaylistByHash } from './playlists';
 import {
   download, 
   readdir, 
@@ -14,7 +15,7 @@ import {
 /**
  * Create a title for the cached song filename
  * 
- * @param {string} title 
+ * @param {string} title
  * @returns {string}
  */
 export function createCacheSongTitle(title) {
@@ -83,6 +84,126 @@ export function removeCache(title) {
 }
 
 /**
+ * Add the caching one
+ * 
+ * @param {string} title
+ */
+export function addCachingOne(title) {
+  removeCachingOne(title);
+  store.cachingSongs.push({ title });
+}
+
+/**
+ * Remove the caching one
+ * 
+ * @param {string} title 
+ */
+export function removeCachingOne(title) {
+  const index = store.cachingSongs.findIndex(s => s.title === title);  
+  
+  if(index == -1) {
+    return;
+  }  
+
+  store.cachingSongs.splice(index, 1);
+}
+
+/**
+ * Add the uncaching one
+ * 
+ * @param {string} title
+ */
+export function addUncachingOne(title) {
+  removeUncachingOne(title);
+  store.uncachingSongs.push({ title });
+}
+
+/**
+ * Remove the uncaching one
+ * 
+ * @param {string} title 
+ */
+export function removeUncachingOne(title) {
+  const index = store.uncachingSongs.findIndex(s => s.title === title);  
+  
+  if(index == -1) {
+    return;
+  }  
+
+  store.uncachingSongs.splice(index, 1);
+}
+
+/**
+ * Add the caching playlist
+ * 
+ * @param {string} hash
+ */
+export function addCachingPlaylist(hash) {
+  removeCachingPlaylist(hash);
+  store.cachingPlaylists.push({ hash });
+}
+
+/**
+ * Remove the caching playlist
+ * 
+ * @param {string} hash 
+ */
+export function removeCachingPlaylist(hash) {
+  const index = store.cachingPlaylists.findIndex(s => s.hash === hash);  
+  
+  if(index == -1) {
+    return;
+  }  
+
+  store.cachingPlaylists.splice(index, 1);
+}
+
+/**
+ * Add the uncaching playlist
+ * 
+ * @param {string} hash
+ */
+export function addUncachingPlaylist(hash) {
+  removeUncachingPlaylist(hash);
+  store.uncachingPlaylists.push({ hash });
+}
+
+/**
+ * Remove the uncaching playlist
+ * 
+ * @param {string} hash 
+ */
+export function removeUncachingPlaylist(hash) {
+  const index = store.uncachingPlaylists.findIndex(s => s.hash === hash);  
+  
+  if(index == -1) {
+    return;
+  }  
+
+  store.uncachingPlaylists.splice(index, 1);
+}
+
+/**
+ * Check tha caching playlist exists
+ * 
+ * @param {string} hash 
+ * @returns {boolean}
+ */
+export function hasCachingPlaylist(hash) {
+  return !!store.cachingPlaylists.find(s => s.hash === hash);
+}
+
+/**
+ * Check tha uncaching playlist exists
+ * 
+ * @param {string} hash 
+ * @returns {boolean}
+ */
+export function hasUncachingPlaylist(hash) {
+  return !!store.uncachingPlaylists.find(s => s.hash === hash);
+}
+
+/**
  * Check tha cache exists
  * 
  * @param {string} title 
@@ -116,6 +237,10 @@ export async function cleanUpCache() {
  */
 export async function setCache() {
   store.cachedSongs = [];
+  store.cachingSongs = [];
+  store.uncachingSongs = [];
+  store.cachingPlaylists = [];
+  store.uncachingPlaylists = [];
   window.cordova? await setCacheMobile(): await setCacheBrowser(); 
 }
 
@@ -179,7 +304,18 @@ export async function setCacheMobile() {
  * @param {string} song.audioLink
  */
 export async function downloadCacheSong(song) {
-  const res = window.cordova? await downloadCacheSongMobile(song): await downloadCacheSongBrowser(song);
+  addCachingOne(song.title);
+  let res;
+
+  try {
+    res = window.cordova? await downloadCacheSongMobile(song): await downloadCacheSongBrowser(song);
+    removeCachingOne(song.title);
+  }
+  catch(err) {
+    removeCachingOne(song.title);
+    throw err;
+  }
+
   addCache(song.title, await getSongCacheInfoFromEntry(res));
 }
 
@@ -218,7 +354,17 @@ export async function downloadCacheSongBrowser(song) {
  * @param {string} title
  */
 export async function removeCacheSong(title) {
-  window.cordova? await removeCacheSongMobile(title): await removeCacheSongBrowser(title);
+  addUncachingOne(title);
+
+  try {
+    window.cordova? await removeCacheSongMobile(title): await removeCacheSongBrowser(title);
+    removeUncachingOne(title);
+  }
+  catch(err) {
+    removeUncachingOne(title);
+    throw err;
+  }
+
   removeCache(title);
 }
 
@@ -341,6 +487,72 @@ export async function getSongCacheInfoFromFileEntry(entry) {
  */
 export async function prepareSongTagsBuffer(blob) {
   return Buffer.from(await blobTo(blob.slice(0, 1024 * 120), 'readAsArrayBuffer'));
+}
+
+/**
+ * Cache all playlist songs
+ * 
+ * @async
+ * @param {object} playlist 
+ */
+export async function cachePlaylist(playlist) {
+  const titles = {};
+  store.cachedSongs.forEach(s => titles[s.title] = s); 
+  const songs = playlist.songs.filter(s => !titles[s.title]);
+  const loop = async (index) => {
+    const song = songs[index];
+
+    if(!song || !hasCachingPlaylist(playlist.hash) || !getPlaylistByHash(playlist.hash)) {
+      removeCachingPlaylist(playlist.hash);
+      return;
+    }
+
+    try {
+      await downloadCacheSong(song);  
+    }
+    catch(err) {
+      //eslint-disable-next-line no-console
+      console.error(err);
+    }
+
+    setTimeout(() => loop(index + 1));
+  }
+
+  addCachingPlaylist(playlist.hash);
+  loop(0);
+}
+
+/**
+ * Unache all playlist songs
+ * 
+ * @async
+ * @param {object} playlist 
+ */
+export async function uncachePlaylist(playlist) {
+  const titles = {};
+  store.cachedSongs.forEach(s => titles[s.title] = s); 
+  const songs = playlist.songs.filter(s => titles[s.title]);
+  const loop = async (index) => {
+    const song = songs[index];
+
+    if(!song || !hasUncachingPlaylist(playlist.hash) || !getPlaylistByHash(playlist.hash)) {
+      removeUncachingPlaylist(playlist.hash);
+      return;
+    }
+
+    try {
+      await removeCacheSong(song.title);  
+    }
+    catch(err) {
+      //eslint-disable-next-line no-console
+      console.error(err);
+    }
+
+    setTimeout(() => loop(index + 1));
+  }
+
+  addUncachingPlaylist(playlist.hash);
+  loop(0);
 }
 
 /**

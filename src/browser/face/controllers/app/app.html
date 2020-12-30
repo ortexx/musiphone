@@ -153,6 +153,7 @@
                         value="${ this.loadPlaylistInputValue }"
                         on-input="${ this.loadPlaylistInputValue = event.target.value; }"
                         placeholder="enter a playlist link"
+                        required
                       />
                     </div> 
                     <button 
@@ -268,7 +269,7 @@
                       focus="${ this.saveToWebModal }"
                       value="${ this.saveToWebTitle }"
                       on-input="${ this.saveToWebTitle = event.target.value; }"
-                      placeholder="enter a title"
+                      placeholder="enter a title"                      
                     />
                   </div> 
                   <button 

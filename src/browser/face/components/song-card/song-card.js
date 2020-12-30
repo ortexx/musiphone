@@ -24,11 +24,17 @@ export default class SongCard extends Akili.Component {
         status: true
       },
       {
-        name: 'cacheLoading',
+        name: 'caching',
         icon: 'fa-spinner fa-spin',
         silent: true,
         status: false
-      },     
+      },
+      {
+        name: 'uncaching',
+        icon: 'fa-spinner fa-spin',
+        silent: true,
+        status: false
+      },  
       {
         name: 'remove',
         icon: 'fa-times-circle',

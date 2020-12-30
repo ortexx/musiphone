@@ -2,7 +2,7 @@ import './playlists.scss'
 import Akili from 'akili';
 import store from 'akili/src/services/store';
 import { removePlaylist } from '../../lib/playlists';
-import { downloadCacheSong, removeCacheSong } from '../../lib/cache';
+import { cachePlaylist, uncachePlaylist, removeCachingPlaylist, removeUncachingPlaylist } from '../../lib/cache';
 
 export default class Playlists extends Akili.Component {
   static template = require('./playlists.html');
@@ -19,19 +19,24 @@ export default class Playlists extends Akili.Component {
     this.scope.cachePlaylist = this.cachePlaylist.bind(this);
     this.scope.addCache = this.addCache.bind(this);
     this.scope.removeCache = this.removeCache.bind(this);
+    this.scope.cancelPlaylistCacheWorks = this.cancelPlaylistCacheWorks.bind(this);   
   }
 
   compiled() {
     this.attr('highlight', 'highlight');
     this.attr('data', this.handleData);
-    this.store('cachedSongs', this.setCached);
+    this.store('cachedSongs', this.setCached, { callOnStart: false });
+    this.store('cachingPlaylists', this.setCaching, { callOnStart: false });
+    this.store('uncachingPlaylists', this.setUncaching, { callOnStart: false });
   }
 
   handleData(data) {
     this.createTitlesInfo(data);   
     this.scope.data = data;
     this.setTitle();
-    !this.isCompiled && this.setCached(store.cachedSongs);
+    this.setCached(store.cachedSongs);
+    this.setCaching(store.cachingSongs);
+    this.setUncaching(store.uncachingSongs);
   }
 
   createTitlesInfo(data) {    
@@ -44,23 +49,32 @@ export default class Playlists extends Akili.Component {
   }
 
   createPlaylistTitle(playlist) {
-    let str = '';
-    const hash = `${playlist.hash.slice(0, 3)}...${playlist.hash.slice(-3)}`
+    let short = '';
+    let full = '';
+    const hash = `${playlist.hash.slice(0, 3)}...${playlist.hash.slice(-3)}`;
     
     if(playlist.title) {
-      str += playlist.title;
-      this.titles[playlist.title] > 1 && (str += ` (${hash})`);
+      short += playlist.title;
+      full += playlist.title;
+
+      if(this.titles[playlist.title] > 1) {
+        short += ` (${hash})`;
+        full += ` (${playlist.hash})`;
+      }
     }
     else {
-      str += hash;
+      short += hash;
+      full += playlist.hash;
     }
 
-    return str;
+    return { short, full };
   }
 
   setTitle() {
     this.scope.data.forEach(pl => {
-      pl._title = this.createPlaylistTitle(pl);
+      const obj = this.createPlaylistTitle(pl);
+      pl._title = obj.short;
+      pl._titleFull = obj.full;
     });
   }
 
@@ -85,6 +99,31 @@ export default class Playlists extends Akili.Component {
     }
   }
 
+  setCaching(arr) {
+    const hashes = {};
+    arr.forEach(s => hashes[s.hash] = s);   
+
+    for(let i = 0; i < this.scope.data.length; i++) {
+      const data = this.scope.data[i];
+      data.caching = !!hashes[data.hash];
+    }
+  }
+
+  setUncaching(arr) {
+    const hashes = {};
+    arr.forEach(s => hashes[s.hash] = s);   
+
+    for(let i = 0; i < this.scope.data.length; i++) {
+      const data = this.scope.data[i];
+      data.uncaching = !!hashes[data.hash];
+    }
+  }
+
+  cancelPlaylistCacheWorks(playlist) {
+    removeCachingPlaylist(playlist.hash);
+    removeUncachingPlaylist(playlist.hash);
+  }
+
   selectPlaylist(playlist) {   
     let hash = null;
 
@@ -101,7 +140,6 @@ export default class Playlists extends Akili.Component {
       confirm: true, 
       onYes: () => {
         const index = this.scope.data.indexOf(playlist);
-        playlist.isRemoved = true;
         removePlaylist(playlist.hash);
         index == 0 && this.selectPlaylist(this.scope.data[1]);
       } 
@@ -117,59 +155,10 @@ export default class Playlists extends Akili.Component {
   }
 
   async removeCache(playlist) {
-    const loop = async (index) => {
-      const song = playlist.songs[index];
-
-      if(!song || playlist.isRemoved || !playlist.isCaching) {
-        playlist.isCaching = false;
-        return;
-      }
-
-      try {
-        await removeCacheSong(song.title);  
-      }
-      catch(err) {
-        //eslint-disable-next-line no-console
-        console.error(err);
-      }
-
-      setTimeout(() => loop(index + 1));
-    }
-
-    playlist.isCaching = true;
-    loop(0);
+    await uncachePlaylist(playlist);
   }
 
   async addCache(playlist) {
-    const loop = async (index) => {      
-      const song = playlist.songs[index];           
-
-      if(!song || playlist.isRemoved || !playlist.isCaching) {
-        playlist.isCaching = false;
-        return;
-      }
-
-      const titles = {};
-      store.cachedSongs.forEach(s => titles[s.title] = s); 
-
-      if(titles[song.title]) {
-        return loop(index + 1);
-      }
-
-      try {
-        store.song = { ...song, isCacheSaving: true };
-        await downloadCacheSong(song);
-      }
-      catch(err) {
-        //eslint-disable-next-line no-console
-        console.error(err);
-      }
-
-      store.song = { ...song, isCacheSaving: false };
-      setTimeout(() => loop(index + 1));
-    }
-
-    playlist.isCaching = true;
-    loop(0);   
+    await cachePlaylist(playlist);
   }
 }

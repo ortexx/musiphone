@@ -330,6 +330,7 @@ export default class Player extends Akili.Component {
   stopLoading() {
     this.scope.isPlaying = false;
     this.scope.isLoading = false;
+    this.isMobileLoaded = false;
     clearTimeout(this.failNextSongTimeout);
     this.releaseMedia();
   }
@@ -348,11 +349,9 @@ export default class Player extends Akili.Component {
     media.__releasing = true;
     clearInterval(media.__mediaInterval);
     clearTimeout(media.__delayTimeout);
-    media.stop()
-    media.release();
+    media.stop();
     delete media.__releasing;
     media.__released = true;
-    this.media = null;
   }
 
   releaseMediaBrowser() {
@@ -396,18 +395,14 @@ export default class Player extends Akili.Component {
   }
 
   async loadSrcMobile(song) {
-    let media;
+    let media; 
     const result = await new Promise((resolve, reject) => {      
       media = this.media = new Media(song.audioLinkCache || song.audioLink, () => {}, (err) => {
         err.code !== 0? reject(new Error(err.message || 'Wrong audio file')): resolve(false);
       }, (status) => {
         if(media.__releasing || media.__released) {
+          media.stop();
           return;
-        }
-
-        if(media !== this.media) {
-          this.releaseMediaMobile(media);
-          return resolve(false);
         }
 
         const prevStatus = this.scope.isPlaying;
@@ -439,10 +434,11 @@ export default class Player extends Akili.Component {
       return result;
     }
     
-    this.pause();
+    this.isMobileLoaded = true;
+    this.pause();    
     this.setControls(song);
     media.__currentTime = 0;
-    media.__mediaInterval = setInterval(async () => {      
+    media.__mediaInterval = setInterval(async () => {
       this.checkProgress();
       media.__currentTime = await new Promise((resolve) => {
         this.media.getCurrentPosition(p => resolve(p < 0? 0: p), () => resolve(0));
@@ -468,9 +464,13 @@ export default class Player extends Akili.Component {
     });
 
     MusicControls.subscribe(action => {
+      if(!this.isMobileLoaded) {
+        return;
+      }
+
       const parsed = JSON.parse(action);
       const message = parsed.message;
-    
+
       if(message == 'music-controls-media-button-play-pause' || message == 'music-controls-toggle-play-pause') {
         this.scope.isPlaying? this.pause(): this.play();
       }
@@ -507,6 +507,10 @@ export default class Player extends Akili.Component {
   }
 
   playMobile() {
+    if(this.media.__releasing || this.media.__released) {
+      return;
+    }
+
     this.media.play({ playAudioWhenScreenIsLocked : true });
     MusicControls.updateIsPlaying(true);
   }
@@ -524,6 +528,10 @@ export default class Player extends Akili.Component {
   }
 
   pauseMobile() {
+    if(this.media.__releasing || this.media.__released) {
+      return;
+    }
+
     this.media.pause();
     MusicControls.updateIsPlaying(false);
   }

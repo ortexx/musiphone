@@ -28,7 +28,7 @@
       <li class="playlist-list-song">
         <song-card
           info="${ this.loopValue }" 
-          buttons="${ { add: false, cache: !this.loopValue.isCacheSaving, cacheLoading: this.loopValue.isCacheSaving } }"
+          buttons="${ { add: false, cache: !this.loopValue.caching && !this.loopValue.uncaching, caching: this.loopValue.caching, uncaching: this.loopValue.uncaching } }"
           on-click="${ this.selectSong(this.loopValue) }"
           on-remove="${ this.removeSong(this.loopValue.title) }"
           on-cache="${ this.toggleCache(this.loopValue) }"

@@ -35,7 +35,12 @@ removeMobileHovers();
 document.addEventListener(window.cordova? 'deviceready': 'DOMContentLoaded', async () => {
   try {  
     if(window.cordova) {
-      window.cordova.plugins.backgroundMode.enable();     
+      window.cordova.plugins.backgroundMode.setDefaults({ silent: true });
+      window.cordova.plugins.backgroundMode.enable();  
+      window.cordova.plugins.backgroundMode.on('activate', () => {
+        cordova.plugins.backgroundMode.disableWebViewOptimizations();
+        cordova.plugins.backgroundMode.disableBatteryOptimizations(); 
+      });   
       document.addEventListener("backbutton", () => {
         window.cordova.plugins.backgroundMode.moveToBackground();
       }, false);      

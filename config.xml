@@ -26,6 +26,7 @@
       <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
     </feature>     
     <config-file target="AndroidManifest.xml" parent="/*">
+      <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
       <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
       <uses-permission android:name="android.permission.WAKE_LOCK" />        
     </config-file>
