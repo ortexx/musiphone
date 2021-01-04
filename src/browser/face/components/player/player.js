@@ -433,10 +433,10 @@ export default class Player extends Akili.Component {
     if(result === false) {
       return result;
     }
-    
-    this.isMobileLoaded = true;
+        
     this.pause();    
     this.setControls(song);
+    this.isMobileLoaded = true;
     media.__currentTime = 0;
     media.__mediaInterval = setInterval(async () => {
       this.checkProgress();

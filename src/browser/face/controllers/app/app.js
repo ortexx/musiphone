@@ -268,10 +268,7 @@ export default class App extends Akili.Component {
   }
 
   changePlaylistOrder(data) {    
-    const oldItem = store.activePlaylist.songs[data.oldIndex];
-    const newItem = store.activePlaylist.songs[data.newIndex];
-    store.activePlaylist.songs[data.oldIndex] = newItem;
-    store.activePlaylist.songs[data.newIndex] = oldItem;
+    store.activePlaylist.songs.splice(data.newIndex, 0, store.activePlaylist.songs.splice(data.oldIndex, 1)[0]);
   }
 
   resetSearchEvent() {

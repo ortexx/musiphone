@@ -41,7 +41,7 @@ export default class Playlists extends Akili.Component {
 
   createTitlesInfo(data) {    
     this.titles = {};
-
+    
     for(let i = 0; i < data.length; i ++) {
       const pl = data[i];
       this.titles[pl.title] = this.titles[pl.title]? this.titles[pl.title] + 1: 1;

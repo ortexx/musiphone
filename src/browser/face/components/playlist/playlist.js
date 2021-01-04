@@ -89,7 +89,7 @@ export default class Playlist extends Akili.Component {
     if(oldIndex == newIndex) {
       return;
     }
-
+    
     setTimeout(() => this.attrs.onSort.trigger({ oldIndex, newIndex }));
   }
 
