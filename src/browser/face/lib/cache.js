@@ -325,7 +325,7 @@ export async function downloadCacheSong(song) {
  * @see downloadCacheSong
  */
 export async function downloadCacheSongMobile(song) {
-  return await download(decodeURI(song.audioLink), createCacheSongPath(song.title));
+  return await download(song.audioLink, createCacheSongPath(song.title));
 }
 
 

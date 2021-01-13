@@ -412,7 +412,7 @@ export default class Player extends Akili.Component {
           return this.onMusicEnd();
         }
 
-        if(media.__resolved && (status == 2 || status == 3)) {          
+        if(this.isMobileLoaded && (status == 2 || status == 3)) {          
           MusicControls.updateIsPlaying(status == 2);
         }
         
@@ -435,7 +435,7 @@ export default class Player extends Akili.Component {
     }
         
     this.pause();    
-    this.setControls(song);
+    await this.setControls(song);
     this.isMobileLoaded = true;
     media.__currentTime = 0;
     media.__mediaInterval = setInterval(async () => {
@@ -447,51 +447,54 @@ export default class Player extends Akili.Component {
     return result;
   }
 
-  setControls(song) {
-    window.cordova && this.setControlsMobile(song);
+  async setControls(song) {
+    window.cordova && await this.setControlsMobile(song);
   }
 
-  setControlsMobile(song) {
-    const parts = song.title.split(' - ');
+  async setControlsMobile(song) {
+    return new Promise((resolve, reject) => {
+      const parts = song.title.split(' - ');
     
-    MusicControls.create({
-      track: parts[1],
-      artist: parts[0],
-      dismissable: false,
-      cover: song.coverLink,
-      hasPrev: true,
-      hasNext: true
+      MusicControls.create({
+        track: parts[1],
+        artist: parts[0],
+        dismissable: false,
+        cover: song.coverLink,
+        hasPrev: true,
+        hasNext: true
+      }, () => {
+        MusicControls.subscribe(action => {
+          if(!this.isMobileLoaded) {
+            return;
+          }
+  
+          const parsed = JSON.parse(action);
+          const message = parsed.message;
+  
+          if(message == 'music-controls-media-button-play-pause' || message == 'music-controls-toggle-play-pause') {
+            this.scope.isPlaying? this.pause(): this.play();
+          }
+          else if(message == 'music-controls-next' || message == 'music-controls-media-button-next') {
+            this.setNextSong();
+          }
+          else if(message == 'music-controls-previous' || message == 'music-controls-media-button-previous') {
+            this.setPrevSong();
+          }
+          else if(message == 'music-controls-pause' || message == 'music-controls-media-button-pause') {
+            this.pause();
+          }
+          else if(message == 'music-controls-play'  || message == 'music-controls-media-button-play') {
+            this.play();
+          }
+          else if(message == 'music-controls-seek-to') {
+            MusicControls.updateElapsed({ elapsed: parsed.position, isPlaying: true });
+          }
+        });
+  
+        MusicControls.listen();
+        resolve();
+      }, reject);   
     });
-
-    MusicControls.subscribe(action => {
-      if(!this.isMobileLoaded) {
-        return;
-      }
-
-      const parsed = JSON.parse(action);
-      const message = parsed.message;
-
-      if(message == 'music-controls-media-button-play-pause' || message == 'music-controls-toggle-play-pause') {
-        this.scope.isPlaying? this.pause(): this.play();
-      }
-      else if(message == 'music-controls-next' || message == 'music-controls-media-button-next') {
-        this.setNextSong();
-      }
-      else if(message == 'music-controls-previous' || message == 'music-controls-media-button-previous') {
-        this.setPrevSong();
-      }
-      else if(message == 'music-controls-pause' || message == 'music-controls-media-button-pause') {
-        this.pause();
-      }
-      else if(message == 'music-controls-play'  || message == 'music-controls-media-button-play') {
-        this.play();
-      }
-      else if(message == 'music-controls-seek-to') {
-        MusicControls.updateElapsed({ elapsed: parsed.position, isPlaying: true });
-      }
-    });
-
-    MusicControls.listen();
   }
 
   play() { 

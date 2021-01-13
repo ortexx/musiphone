@@ -176,8 +176,7 @@ export async function createFile (path, filename) {
  */
 export async function download (url, path) {
   return new Promise((resolve, reject) => {
-    let fileTransfer = new FileTransfer();
-    url = encodeURI(url);    
+    const fileTransfer = new FileTransfer();
     fileTransfer.download(url, path, resolve, reject, true);
   });
 } 
