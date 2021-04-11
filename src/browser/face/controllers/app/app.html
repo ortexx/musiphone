@@ -112,11 +112,12 @@
       <div class="row">
         <div class="song-search col-lg-6 col-12 px-4 pt-0 pt-lg-3">
           <div class="song-search-input input-group input-group-lg">
-            <i class="fas fa-search fa-lg"></i>
+            <i hidden="${ this.isSongFinding }" class="fas fa-search fa-lg"></i>
+            <i hidden="${ !this.isSongFinding }" class="fas fa-circle-notch fa-spin fa-lg"></i>
             <input 
               type="text" 
               class="form-control"
-              placeholder="Artist - Title"
+              placeholder="find in the storage..."
               debounce="2000"
               value="${ this.searchInputValue }"
               on-debounce="${ this.searchInputValue = event.target.value; this.findSong() }"

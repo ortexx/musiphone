@@ -78,6 +78,7 @@ export default class App extends Akili.Component {
     this.scope.isConfirming = false;
     this.scope.isPlaylistSaving = false;
     this.scope.isPlaylistLoading = false;
+    this.scope.isSongFinding = false;    
     this.scope.isCheckingApiAddress = false;
     this.scope.wrongPlaylistHash = this.transition.data === null;
     this.scope.searchInputValue = '';  
@@ -437,12 +438,20 @@ export default class App extends Akili.Component {
       return;
     }
 
+    this.findingRequestController && this.findingRequestController.abort();
+    this.findingRequestController = new AbortController();     
+    const timeout = setTimeout(() => this.scope.isSongFinding = true, 100);
+
     try {
-      const info = await clientStorage.getSong(this.scope.searchInputValue);       
+      const songs = await clientStorage.findSongs(this.scope.searchInputValue, { limit: 1 });  
+      clearTimeout(timeout);
+      this.findingRequestController = null; 
+      this.scope.isSongFinding = false;
+      const info = songs[0]; 
       this.scope.searchEvent.status = 'info';     
       this.scope.searchEvent.message = 'No related songs found';    
   
-      if(info) { 
+      if(info) {
         this.scope.searchEvent.status = 'success';
         this.scope.searchEvent.message = '';
         this.scope.searchEvent.meta = info;
@@ -450,16 +459,16 @@ export default class App extends Akili.Component {
       }
     }
     catch(err) {
+      clearTimeout(timeout);
+      this.findingRequestController = null; 
+      this.scope.isSongFinding = false;
+
       if(!err.code) {
         return store.event = { err };
       }
 
       this.scope.searchEvent.status = 'danger';
       this.scope.searchEvent.message = err.message;
-
-      if(err.code == 'ERR_MUSERIA_SONG_WRONG_TITLE') {
-        this.scope.searchEvent.message = 'Wrong song title. It must be like "Artist - Title"';
-      }
     }
   }  
 

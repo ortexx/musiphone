@@ -35,7 +35,6 @@ removeMobileHovers();
 document.addEventListener(window.cordova? 'deviceready': 'DOMContentLoaded', async () => {
   try {  
     if(window.cordova) {
-      window.cordova.plugins.backgroundMode.setDefaults({ silent: true });
       window.cordova.plugins.backgroundMode.enable();  
       window.cordova.plugins.backgroundMode.on('activate', () => {
         cordova.plugins.backgroundMode.disableWebViewOptimizations();
@@ -43,7 +42,7 @@ document.addEventListener(window.cordova? 'deviceready': 'DOMContentLoaded', asy
       });   
       document.addEventListener("backbutton", () => {
         window.cordova.plugins.backgroundMode.moveToBackground();
-      }, false);      
+      }, false);
     }
 
     router.init('/musiphone', location.pathname.match(/\.html$/));   

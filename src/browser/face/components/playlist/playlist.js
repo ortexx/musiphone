@@ -3,6 +3,7 @@ import Akili from 'akili';
 import store from 'akili/src/services/store';
 import utils from 'akili/src/utils';
 import { removeSong } from '../../lib/playlists';
+import { checkSelection } from '../../lib/system';
 import { downloadCacheSong, removeCacheSong, hasCache, trimCacheFromSong } from '../../lib/cache';
 import Sortable from '@shopify/draggable/lib/sortable';
 
@@ -23,7 +24,7 @@ export default class Playlist extends Akili.Component {
     this.scope.data = { songs: [] };
     this.sortable = new Sortable(this.el.querySelector('ul.playlist-list'), {
       draggable: 'li.playlist-list-song',
-      delay: 300,
+      delay: window.cordova? 200: 100,
       mirror: {
         constrainDimensions: true
       }
@@ -142,6 +143,10 @@ export default class Playlist extends Akili.Component {
   }
 
   selectSong(song) {
+    if(checkSelection()) {
+      return;
+    }
+
     if(this.scope.songSearchValue) {
       this.scope.songSearchValue = '';
       this.scope.page = 1;

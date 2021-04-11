@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const utils = require('./bin/utils');
 const config = require('./webpack.face.js');
 
-module.exports = (options = {}, wp = null, onlyMerge = false) => {
+module.exports = (options = {}, wp) => {
   let apiAddress = options.apiAddress || argv.apiAddress || process.env.MUSIPHONE_API_ADDRESS;
 
   try {
@@ -17,5 +17,5 @@ module.exports = (options = {}, wp = null, onlyMerge = false) => {
     options = { plugins };
   }
   
-  return onlyMerge? options: config(options);
+  return wp? config(options, wp): options;
 }

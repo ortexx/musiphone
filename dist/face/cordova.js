@@ -1,1 +1,1 @@
-window.cordova = null;
+window.cordova=null;

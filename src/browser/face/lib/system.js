@@ -1,7 +1,7 @@
 import request from 'akili/src/services/request';
 import client from '../client';
 import clientStorage from '../client-storage';
-import ClientMusiphone from '../../../../dist/musiphone.client.js';
+import ClientMusiphone from '../../../../dist/client/musiphone.client.js';
 import network from './network';
 
 /**
@@ -36,10 +36,10 @@ export function getApiAddress() {
 /**
  * Initialize the data storage (sessionStorage, localStorage)
  */
-export function initDataStorage() {
+export function initDataStorage(session = false) {
   window.workStorage = sessionStorage;
 
-  if(window.cordova) {
+  if(window.cordova || !session) {
     window.workStorage = localStorage;
     return;
   }
@@ -111,7 +111,7 @@ export async function initClients() {
  */
 export async function checkApiAddress(address) {
   try {
-    const res = await request.get(`${ client.getRequestProtocol() }://${ address }/ping`, { json: true, timeout: 2000 });
+    const res = await request.get(`${ client.getRequestProtocol() }://${ address }/ping`, { json: true, timeout: 5000 });
 
     if(typeof res.data == 'object' && res.data.address === address && res.data.version.split('-')[0] == 'musiphone') {
       return true;
