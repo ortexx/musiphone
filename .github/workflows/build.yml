@@ -11,7 +11,7 @@ jobs:
       matrix:
         node-version: [10.x, 12.x, 14.x]
     steps:
-      - uses: actions/checkout@v2     
+      - uses: actions/checkout@v2      
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
@@ -23,8 +23,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - uses: webfactory/ssh-agent@v0.5.2
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - run: npm ci
       - run: npm ddp
       - run: npm run build-ci
