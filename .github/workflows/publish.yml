@@ -6,10 +6,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: webfactory/ssh-agent@v0.5.2
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - uses: actions/checkout@v2      
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
@@ -19,6 +16,9 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
+      - uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - run: npm ci
       - run: npm ddp
       - run: npm run build-ci
