@@ -159,18 +159,36 @@
         color: $light;
         z-index: 1;
 
-        &.fa-spin {
-          margin-top: -0.33em;
+        &.song-search-loading {
+          margin-top: -0.37em;
+        }
+
+        &.song-search-close {
+          right: 0.7em;
+          left: unset;
+          opacity: 0.6;
+          cursor: pointer;
+
+          &:hover {
+            opacity: 1;
+          }
         }
       }
     
       & > input { 
-        padding-left: 2.5em;      
+        padding-left: 2.5em;
+        padding-right: 2.5em;
   
         &:focus {
           z-index: 0;
         }
       }
+    }
+  }
+
+  & .found-songs {
+    & > :first-child {
+      margin-top: 0;
     }
   }
 }

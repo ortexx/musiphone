@@ -82,6 +82,7 @@ export default class App extends Akili.Component {
     this.scope.isCheckingApiAddress = false;
     this.scope.wrongPlaylistHash = this.transition.data === null;
     this.scope.searchInputValue = '';  
+    this.scope.searchInputFocus = true;  
     this.scope.loadPlaylistInputValue = '';   
     this.scope.apiAddressInputValue = localStorage.getItem('apiAddress') || '';  
     this.scope.activePlaylist = [];
@@ -146,9 +147,9 @@ export default class App extends Akili.Component {
     clearInterval(this.externalInterval);
   } 
 
-  selectFoundSong() {
-    this.scope.searchEvent.meta.isActive = true;
-    store.activeSong = this.scope.searchEvent.meta;
+  selectFoundSong(song) {
+    song.isActive = true;
+    store.activeSong = song;
   }
 
   setMenu() {
@@ -190,11 +191,11 @@ export default class App extends Akili.Component {
   }
 
   handleActiveSong(song) {
-    if(!this.scope.searchEvent.meta || (song && this.scope.searchEvent.meta.title === song.title)) {
+    if(!this.scope.searchEvent.meta.songs || !song) {
       return;
     }
 
-    this.scope.searchEvent.meta.isActive = false;
+    this.scope.searchEvent.meta.songs.forEach(s => s.isActive = song.title == s.title);
   }
 
   handlePageTitle(title) {
@@ -290,11 +291,10 @@ export default class App extends Akili.Component {
     this.el.querySelector('#load-config').click();
   } 
   
-  addSong() {
-    const info = this.scope.searchEvent.meta;
+  addSong(song) {
     this.resetSearchEvent();
     this.scope.searchInputValue = '';
-    addSong(info.title, getActivePlaylist());
+    addSong(song.title, getActivePlaylist());
   } 
 
   newPlaylist() {
@@ -443,19 +443,18 @@ export default class App extends Akili.Component {
     const timeout = setTimeout(() => this.scope.isSongFinding = true, 100);
 
     try {
-      const songs = await clientStorage.findSongs(this.scope.searchInputValue, { limit: 1 });  
+      const songs = await clientStorage.findSongs(this.scope.searchInputValue, { limit: 5 });  
       clearTimeout(timeout);
       this.findingRequestController = null; 
       this.scope.isSongFinding = false;
-      const info = songs[0]; 
       this.scope.searchEvent.status = 'info';     
       this.scope.searchEvent.message = 'No related songs found';    
   
-      if(info) {
+      if(songs.length) {
         this.scope.searchEvent.status = 'success';
         this.scope.searchEvent.message = '';
-        this.scope.searchEvent.meta = info;
-        this.scope.searchEvent.meta.isActive = store.activeSong && store.activeSong.title === info.title;
+        this.scope.searchEvent.meta.songs = songs;
+        this.scope.searchEvent.meta.songs.forEach(s => s.isActive = store.activeSong && store.activeSong.title == s.title);
       }
     }
     catch(err) {

@@ -24,7 +24,7 @@ export default class Playlist extends Akili.Component {
     this.scope.data = { songs: [] };
     this.sortable = new Sortable(this.el.querySelector('ul.playlist-list'), {
       draggable: 'li.playlist-list-song',
-      delay: window.cordova? 200: 100,
+      delay: window.cordova? 300: 100,
       mirror: {
         constrainDimensions: true
       }

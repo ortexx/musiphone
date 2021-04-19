@@ -70,10 +70,7 @@
         color: $blue;
         text-decoration: none;
         opacity: 0.5;
-
-        &:not(:last-child) {
-          margin-right: 0.2em;
-        }
+        margin-left: 0.2em;
 
         &:hover {
           opacity: 0.9;

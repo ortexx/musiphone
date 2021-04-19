@@ -113,19 +113,85 @@
         <div class="song-search col-lg-6 col-12 px-4 pt-0 pt-lg-3">
           <div class="song-search-input input-group input-group-lg">
             <i hidden="${ this.isSongFinding }" class="fas fa-search fa-lg"></i>
-            <i hidden="${ !this.isSongFinding }" class="fas fa-circle-notch fa-spin fa-lg"></i>
+            <i hidden="${ !this.isSongFinding }" class="fas fa-circle-notch fa-spin fa-lg song-search-loading"></i>
+            <i 
+              on-click="${ this.resetSearchEvent(); this.searchInputValue = ''; this.searchInputFocus = true }"
+              hidden="${ !this.searchEvent.meta.songs }" class="fa fa-times fa-lg song-search-close"
+            ></i>
             <input 
               type="text" 
               class="form-control"
               placeholder="find in the storage..."
-              debounce="2000"
+              debounce="2500"
               value="${ this.searchInputValue }"
+              focus="${ this.searchInputFocus }"
               on-debounce="${ this.searchInputValue = event.target.value; this.findSong() }"
+              on-focus="${ this.searchInputFocus = true }"
+              on-blur="${ this.searchInputFocus = false }"
             />
           </div>
+          <if is="${ this.searchEvent.status }" class="d-block mt-3">
+            <if 
+              recreate
+              is="${ this.searchEvent.status != 'success'}" 
+              class="d-block search-alert alert alert-${ this.searchEvent.status }"
+            >  
+              ${ this.searchEvent.message }  
+              <button 
+                type="button" 
+                class="close" 
+                data-dismiss="alert" 
+                aria-label="Close" 
+                on-click="${ this.resetSearchEvent(); this.searchInputValue = '';  this.searchInputFocus = true; }"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </if>
+            <else>     
+              <for in="${ this.searchEvent.meta.songs || [] }" class="found-songs">
+                <song-card 
+                  info="${ this.loopValue }"
+                  buttons="${ { cache: false, remove: false } }"
+                  on-click="${ this.selectFoundSong(this.loopValue) }"
+                  on-add="${ this.addSong(this.loopValue) }"
+                  class="d-block mt-2"
+                ></song-card>
+              </for>
+            </else>
+          </if>
+          <if is="${ this.activePlaylist && this.activePlaylist.songs.length }" class="mt-3 d-block">     
+            <if 
+              is="${ !this.activePlaylist.link }" 
+              class="playlist-alert d-block alert alert-warn"
+            >   
+              There are some changes in the playlist. Save it to the web to get a link. 
+            </if>
+            <else class="playlist-alert d-block alert alert-success ${ this.linkIsBlinking? 'playlist-alert--blinking': '' }"> 
+              <a 
+                hidden="${ !window.cordova }"
+                href="javascript:;" 
+                class="playlist-alert-share playlist-alert-btn"
+                on-click="${ this.sharePlaylistLink() }"
+              >
+                <i class="fas fa-share-alt"></i>
+              </a>
+              <a 
+                href="javascript:;" 
+                class="playlist-alert-copy playlist-alert-btn" 
+                on-click="${ this.copyPlaylistLink() }"
+              >
+                <i class="fas fa-copy"></i> 
+              </a>  
+              <tooltip message="${ this.activePlaylist.link }">
+                <a href="${ this.activePlaylist.link }" target="_blank">            
+                  ${ (this.activePlaylist.link || '').length > 90? this.activePlaylist.link.slice(0, 90) + '...': this.activePlaylist.link }  
+                </a>
+              </tooltip>
+            </else>
+          </if>         
         </div>
         <div class="col-lg-6 col-12 px-4 pt-3 pt-lg-0 pt-lg-3">
-          <div class="position-relative" hidden="${ this.searchEvent.status }">
+          <div>
             <div class="row">
               <div class="col-6 pr-2">
                 <button 
@@ -188,112 +254,51 @@
                   on-change="${ this.loadFile(event.target.files[0]) }"
                   accept="audio/x-mpegurl"
                 >
-              </div>
+              </div>            
             </div>
-          </div>
-          <if is="${ this.searchEvent.status }">
-            <if 
-              recreate
-              is="${ this.searchEvent.status != 'success'}" 
-              class="d-block search-alert alert alert-${ this.searchEvent.status }"
-            >  
-              ${ this.searchEvent.message }  
-              <button 
-                type="button" 
-                class="close" 
-                data-dismiss="alert" 
-                aria-label="Close" 
-                on-click="${ this.resetSearchEvent(); this.searchInputValue = '';  this.searchInputFocus = true; }"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </if>
-            <else>               
-              <song-card 
-                info="${ this.searchEvent.meta }"
-                buttons="${ { cache: false } }"
-                on-click="${ this.selectFoundSong(this.loopValue) }"
-                on-add="${ this.addSong() }"
-                on-remove="${ this.resetSearchEvent(); this.searchInputValue = ''; this.searchInputFocus = true }"
-              ></song-card>
-            </else>
-          </if> 
+            <div class="row mt-3">
+              <div class="col-6 pr-2">
+                <modal-window 
+                  body-class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4"
+                  is-open="${ this.saveToWebModal }"
+                  on-is-open="${ this.saveToWebModal = event.detail }"
+                >    
+                  <form 
+                    class="playlist-save"
+                    on-submit="${ event.preventDefault(); this.savePlaylist(); }"
+                  >                
+                    <div class="form-group w-100 mt-3">
+                      <input 
+                        type="text"
+                        class="form-control"
+                        focus="${ this.saveToWebModal }"
+                        value="${ this.saveToWebTitle }"
+                        on-input="${ this.saveToWebTitle = event.target.value; }"
+                        placeholder="enter a title"                      
+                      />
+                    </div> 
+                    <button 
+                      type="submit"
+                      class="btn form-control btn-secondary"
+                      disabled="${ this.isPlaylistSaving }"
+                    >
+                      Confirm <i hidden="${ !this.isPlaylistSaving }" class="fas fa-circle-notch fa-spin"></i>
+                    </button>  
+                  </form>   
+                </modal-window>
+                <button class="btn form-control btn-lg btn-secondary" on-click="${ this.saveToWebModal = true }">         
+                  Save to web
+                </button>
+              </div>  
+              <div class="col-6 pl-2">
+                <button class="btn form-control btn-lg btn-secondary" on-click="${ this.saveFile() }"> 
+                  Save to file
+                </button>  
+              </div>   
+            </div>
+          </div>         
         </div>   
-      </div>
-      <if is="${ this.activePlaylist && this.activePlaylist.songs.length }" class="row">
-        <div class="col-12 col-lg-6 px-4 pt-3 order-2 order-lg-1">          
-          <if 
-            is="${ !this.activePlaylist.link }" 
-            class="playlist-alert d-block alert alert-warn"
-          >   
-            There are some changes in the playlist. Save it to the web to get a link. 
-          </if>
-          <else class="playlist-alert d-block alert alert-success ${ this.linkIsBlinking? 'playlist-alert--blinking': '' }"> 
-            <a 
-              hidden="${ !window.cordova }"
-              href="javascript:;" 
-              class="playlist-alert-share playlist-alert-btn"
-              on-click="${ this.sharePlaylistLink() }"
-            >
-              <i class="fas fa-share-alt"></i>
-            </a>
-            <a 
-              href="javascript:;" 
-              class="playlist-alert-copy playlist-alert-btn" 
-              on-click="${ this.copyPlaylistLink() }"
-            >
-              <i class="fas fa-copy"></i> 
-            </a>  
-            <tooltip message="${ this.activePlaylist.link }">
-              <a href="${ this.activePlaylist.link }" target="_blank">            
-                ${ (this.activePlaylist.link || '').length > 90? this.activePlaylist.link.slice(0, 90) + '...': this.activePlaylist.link }  
-              </a>
-            </tooltip>
-          </else>
-        </div> 
-        <div class="col-12 col-lg-6 px-4 pt-3 order-1 order-lg-2">
-          <div class="row">
-            <div class="col-6 pr-2">
-              <modal-window 
-                body-class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4"
-                is-open="${ this.saveToWebModal }"
-                on-is-open="${ this.saveToWebModal = event.detail }"
-              >    
-                <form 
-                  class="playlist-save"
-                  on-submit="${ event.preventDefault(); this.savePlaylist(); }"
-                >                
-                  <div class="form-group w-100 mt-3">
-                    <input 
-                      type="text"
-                      class="form-control"
-                      focus="${ this.saveToWebModal }"
-                      value="${ this.saveToWebTitle }"
-                      on-input="${ this.saveToWebTitle = event.target.value; }"
-                      placeholder="enter a title"                      
-                    />
-                  </div> 
-                  <button 
-                    type="submit"
-                    class="btn form-control btn-secondary"
-                    disabled="${ this.isPlaylistSaving }"
-                  >
-                    Confirm <i hidden="${ !this.isPlaylistSaving }" class="fas fa-circle-notch fa-spin"></i>
-                  </button>  
-                </form>   
-              </modal-window>
-              <button class="btn form-control btn-lg btn-secondary" on-click="${ this.saveToWebModal = true }">         
-                Save to web
-              </button>
-            </div>  
-            <div class="col-6 pl-2">
-              <button class="btn form-control btn-lg btn-secondary" on-click="${ this.saveFile() }"> 
-                Save to file
-              </button>  
-            </div>   
-          </div>
-        </div>        
-      </if>
+      </div>      
       <if is="${ this.playlists.length }" class="row">
         <div class="col-12 px-4 pt-4">
           <playlists 
