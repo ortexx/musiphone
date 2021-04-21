@@ -5,6 +5,7 @@ import store from 'akili/src/services/store';
 import { getCache, excludeCacheFromSong } from '../../lib/cache';
 import { checkSelection } from '../../lib/system';
 import network from '../../lib/network';
+import clientStorage from '../../client-storage';
 
 export default class Player extends Akili.Component {
   static template = require('./player.html');
@@ -453,7 +454,7 @@ export default class Player extends Akili.Component {
 
   async setControlsMobile(song) {
     return new Promise((resolve, reject) => {
-      const parts = song.title.split(' - ');
+      const parts = clientStorage.constructor.utils.splitSongTitle(song.title);
     
       MusicControls.create({
         track: parts[1],

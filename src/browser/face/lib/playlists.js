@@ -60,7 +60,7 @@ export function removeSong(title, playlist) {
 export function addSong(title, playlist) {
   const info = createSongInfo(title);
   const index = playlist.songs.findIndex(s => s.title === title);
-  index == -1 && playlist.songs.unshift(info);
+  index == -1? playlist.songs.unshift(info): (playlist.songs[index] = info);
   return playlist;
 }
 

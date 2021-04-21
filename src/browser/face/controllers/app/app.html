@@ -116,8 +116,8 @@
             <i hidden="${ !this.isSongFinding }" class="fas fa-circle-notch fa-spin fa-lg song-search-loading"></i>
             <i 
               on-click="${ this.resetSearchEvent(); this.searchInputValue = ''; this.searchInputFocus = true }"
-              hidden="${ !this.searchEvent.meta.songs }" class="fa fa-times fa-lg song-search-close"
-            ></i>
+              hidden="${ !this.searchEvent.status }" class="fa fa-times fa-lg song-search-close"
+            ></i>            
             <input 
               type="text" 
               class="form-control"
@@ -136,16 +136,7 @@
               is="${ this.searchEvent.status != 'success'}" 
               class="d-block search-alert alert alert-${ this.searchEvent.status }"
             >  
-              ${ this.searchEvent.message }  
-              <button 
-                type="button" 
-                class="close" 
-                data-dismiss="alert" 
-                aria-label="Close" 
-                on-click="${ this.resetSearchEvent(); this.searchInputValue = '';  this.searchInputFocus = true; }"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
+              ${ this.searchEvent.message }
             </if>
             <else>     
               <for in="${ this.searchEvent.meta.songs || [] }" class="found-songs">
