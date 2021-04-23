@@ -82,7 +82,7 @@ export default class App extends Akili.Component {
     this.scope.isCheckingApiAddress = false;
     this.scope.wrongPlaylistHash = this.transition.data === null;
     this.scope.searchInputValue = '';  
-    this.scope.searchInputFocus = true;  
+    this.scope.searchInputFocus = !window.cordova;
     this.scope.loadPlaylistInputValue = '';   
     this.scope.apiAddressInputValue = localStorage.getItem('apiAddress') || '';  
     this.scope.activePlaylist = [];
