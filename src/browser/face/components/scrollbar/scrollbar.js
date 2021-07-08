@@ -10,4 +10,9 @@ export default class Scrollbar extends Akili.Component {
   created() {
     this.scrollbar = smoothScrollbar.init(this.el);
   }
+
+  removed() {
+    this.scrollbar && smoothScrollbar.destroy(this.el);
+    delete this.scrollbar;
+  }
 }
