@@ -65,7 +65,7 @@
     "babel-preset-akili": "^2.0.4",
     "chai": "^4.2.0",
     "copy-webpack-plugin": "^6.4.1",
-    "cordova": "^10.0.1-dev",
+    "cordova": "^10.0.0",
     "cordova-android": "^9.1.0",
     "cordova-plugin-androidx": "^2.0.0",
     "cordova-plugin-background-mode": "^0.7.3",
