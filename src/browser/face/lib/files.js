@@ -10,7 +10,7 @@ export function getDownloadFolder() {
     return cordova.file.documentsDirectory;
   }
   
-  return `${ cordova.file.externalRootDirectory }Download/`;
+  return cordova.file.externalRootDirectory? `${ cordova.file.externalRootDirectory }Download/`: cordova.file.dataDirectory;
 }
 
 /**
@@ -162,7 +162,7 @@ export async function writeToFile(writer, data) {
 export async function createFile (path, filename) {
   const dir = await resolveFileSystem(path);  
   return new Promise((resolve, reject) => {
-    dir.getFile(filename, { create: true }, resolve, reject);
+    dir.getFile(filename, { create: true, exclusive: false }, resolve, reject);
   });
 }
 

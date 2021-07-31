@@ -28,7 +28,7 @@
     <config-file target="AndroidManifest.xml" parent="/*">
       <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
       <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-      <uses-permission android:name="android.permission.WAKE_LOCK" />        
+      <uses-permission android:name="android.permission.WAKE_LOCK" />
     </config-file>
     <config-file target="AndroidManifest.xml" parent="./application/activity/[@android:name='MainActivity']">
       <intent-filter>
@@ -62,9 +62,10 @@
     <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
       <application android:usesCleartextTraffic="true"/> 
       <application android:requestLegacyExternalStorage="true" />
-      <application android:launchMode="singleInstance" />     
+      <application android:launchMode="singleInstance" />
     </edit-config>
     <allow-intent href="market:*" />
+    <preference name="AndroidInsecureFileModeEnabled" value="true" />
     <preference name="AndroidLaunchMode" value="singleTask" />
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="AndroidExtraFilesystems" value="files,files-external,documents,sdcard,cache,cache-external,assets,root" />
