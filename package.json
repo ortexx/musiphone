@@ -1,6 +1,6 @@
 {
   "name": "musiphone",
-  "version": "0.2.22",
+  "version": "0.2.23",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
@@ -66,7 +66,7 @@
     "chai": "^4.2.0",
     "copy-webpack-plugin": "^6.4.1",
     "cordova": "^10.0.1-dev",
-    "cordova-android": "^10.0.1-dev",
+    "cordova-android": "^10.1.0",
     "cordova-plugin-androidx": "^2.0.0",
     "cordova-plugin-background-mode": "^0.7.3",
     "cordova-plugin-device": "^2.0.3",
