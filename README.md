@@ -130,7 +130,7 @@ If necessary, you have the opportunity to export playlists from one server to an
 
 * Copy all project files to the second server. It is convenient and works at the current moment, because the node is able to reconfigure all information to a new address. But there is no guarantee that this will work in the future.
 
-* Use the song export feature: run ``` node.exportPlaylists() ``` method or via the command line as ``` museria -a exportPlaylists -n 2.2.2.2:2790 ```.
+* Use the song export feature: run ``` node.exportPlaylists() ``` method or via the command line as ``` musiphone -a exportPlaylists -n 2.2.2.2:2790 ```.
 
 ## Contribution
 If you face a bug or have an idea how to improve the library, create an issue on github. In order to fix something or add new code yourself, fork the library, make changes and create a pull request to the master branch. Don't forget about tests in this case. Also you can join [the project on github](https://github.com/ortexx/musiphone/projects/1).

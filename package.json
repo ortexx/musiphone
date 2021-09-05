@@ -1,6 +1,6 @@
 {
   "name": "musiphone",
-  "version": "0.2.21",
+  "version": "0.2.22",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
@@ -106,12 +106,12 @@
     "express": "^4.17.1",
     "express-static-search": "^0.1.7",
     "lodash": "^4.17.19",
-    "metastocle": "^0.2.15",
-    "museria": "^0.2.32",
+    "metastocle": "^0.2.22",
+    "museria": "^0.2.34",
     "serve-favicon": "^2.5.0",
     "slugify": "^1.4.6",
     "smooth-scrollbar": "^8.5.3",
-    "spreadable": "^0.2.15",
+    "spreadable": "^0.2.18",
     "tippy.js": "^6.2.7"
   },
   "cordova": {

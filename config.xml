@@ -21,6 +21,8 @@
   <allow-intent href="sms:*" />
   <allow-intent href="mailto:*" />
   <allow-intent href="geo:*" />
+  <allow-navigation href="http://*/*" />
+  <allow-navigation href="https://*/*" />
   <platform name="android">   
     <feature name="SocialSharing">
       <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
