@@ -174,7 +174,11 @@
                 <i class="fas fa-copy"></i> 
               </a>  
               <tooltip message="${ this.activePlaylist.link }">
-                <a href="${ this.activePlaylist.link }" target="_blank">            
+                <a 
+                  href="${ window.cordova? 'javascript:;': this.activePlaylist.link }" 
+                  on-click="${ window.cordova && window.open(this.activePlaylist.link, '_system'); !!window.cordova }" 
+                  target="_blank"
+                >            
                   ${ (this.activePlaylist.link || '').length > 90? this.activePlaylist.link.slice(0, 90) + '...': this.activePlaylist.link }  
                 </a>
               </tooltip>

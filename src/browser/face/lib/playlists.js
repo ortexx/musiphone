@@ -3,7 +3,6 @@ import store from 'akili/src/services/store';
 import utils from 'akili/src/utils';
 import clientStorage from '../client-storage';
 import client from '../client';
-import url from 'url';
 import qs from 'querystring';
 import base64url from 'base64url';
 
@@ -244,9 +243,12 @@ export async function parsePlaylistLink(link) {
     return '';
   }
 
-  const info = url.parse(link);
+  let info;
 
-  if(!info) {
+  try {
+    info = new URL(link);
+  }
+  catch(err) {
     return '';
   }
 
@@ -321,23 +323,18 @@ export function comparePlaylists(first, second) {
  * @returns {{songs: string[], title: string}}
  */
 export function parsePlaylist(text) {
-  const lines = text.split('\n');
+  const lines = text.split('\n').filter(l => l.trim());
   const songs = [];
   let title = '';
   let lastSongTitle = '';
   let prevIsInf = false;
 
   for(let i = 0; i < lines.length; i++) {    
-    const line = lines[i];
-
-    if(!line.trim()) {
-      continue;
-    }
-    
+    const line = lines[i];    
     const ext = line.split(':'); 
     let songTitle = lastSongTitle;
     lastSongTitle = '';
-
+    
     if(ext[0] == '#PLAYLIST') {
       title = ext[1];
       continue;
@@ -349,24 +346,28 @@ export function parsePlaylist(text) {
       }
       else {
         lastSongTitle = (ext[1] || '').split(',').slice(1).join(',');
-        prevIsInf = true; 
+        prevIsInf = true;
 
         if(i != lines.length - 1) {
           continue;
         }
 
-        songTitle = lastSongTitle;
+        songTitle = lastSongTitle;        
       }
     }
 
     prevIsInf = false;
-    const info = url.parse(line);
+    
+    try {
+      const info = new URL(line);
 
-    if(info && info.query) {
-      const query = qs.parse(info.query);
-      query.title && !songTitle && (songTitle = query.title);
-    }   
-
+      if(info.query) {
+        const query = qs.parse(info.query);
+        query.title && !songTitle && (songTitle = query.title);
+      }
+    }
+    catch(err) { null }
+    
     if(!songTitle || !clientStorage.constructor.utils.isSongTitle(songTitle)) {
       continue;
     }

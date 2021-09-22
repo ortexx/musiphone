@@ -1,7 +1,6 @@
 import './app.scss';
 import Akili from 'akili';
 import slugify from 'slugify';
-import url from 'url';
 import router from 'akili/src/services/router';
 import store from 'akili/src/services/store';
 import utils from 'akili/src/utils';
@@ -111,7 +110,7 @@ export default class App extends Akili.Component {
     this.setMenu();
   } 
 
-  async compiled() {    
+  async compiled() {
     if(this.transition.data) {            
       store.activePlaylist = utils.copy(addPlaylist(this.transition.data));
     }
@@ -124,12 +123,12 @@ export default class App extends Akili.Component {
     this.store('event', this.handleEvent);
     this.store('playlists', this.handlePlaylists);
     this.store('activePlaylist', this.handleActivePlaylist);    
-    const isExternal = isExternalHash(store.activePlaylist.hash);
+     const isExternal = isExternalHash(store.activePlaylist.hash);
 
     if(this.transition.data) {
       !isExternal && await this.postPlaylist(store.activePlaylist);
     }    
-
+    
     clearInterval(this.externalInterval);
     isExternal && (this.externalInterval = setInterval(async () => {
       const playlist = await getExternalPlaylist(store.activePlaylist.hash); 
@@ -153,6 +152,7 @@ export default class App extends Akili.Component {
   }
 
   setMenu() {
+    const projectUrl = 'https://github.com/ortexx/museria-player';
     this.scope.menu = [
       {
         text: 'Load config',
@@ -168,13 +168,15 @@ export default class App extends Akili.Component {
       {
         text: 'Project repository',
         icon: 'fab fa-github',
-        href: 'https://github.com/ortexx/museria-player',
+        href: window.cordova? null: projectUrl,
+        handler: () => (window.cordova? window.open(projectUrl, '_system'): null),
         blank: true
       },
       {
         text: 'Music storage',
         icon: 'fa fa-cloud',
-        href: this.scope.storageUrl,
+        href: window.cordova? null: this.scope.storageUrl,
+        handler: () => (window.cordova? window.open(this.scope.storageUrl, '_system'): null),
         blank: true
       }
     ];
@@ -256,7 +258,7 @@ export default class App extends Akili.Component {
   }
 
   async handlePlaylists(playlists) {      
-    this.scope.playlists = playlists; 
+    this.scope.playlists = playlists.map(p => ({...p, songs: null})); 
     workStorage.setItem('playlists', JSON.stringify(preparePlaylistsToExport(playlists))); 
     await cleanUpCache();
   }
@@ -495,11 +497,14 @@ export default class App extends Akili.Component {
     this.scope.isCheckingApiAddress = true;
 
     try {
+      let info;
       let value = this.scope.apiAddressInputValue;
-      !value.match(/^http/i) && (value = `http://${ value }`);
-      const info = url.parse(value);
+      !value.match(/^http/i) && (value = `http://${ value }`);      
 
-      if(!info) {
+      try {
+        info = new URL(value);
+      }
+      catch(e) {
         throw err;
       }
       

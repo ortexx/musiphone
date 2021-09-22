@@ -1,7 +1,7 @@
 import './playlists.scss'
 import Akili from 'akili';
 import store from 'akili/src/services/store';
-import { removePlaylist } from '../../lib/playlists';
+import { getPlaylistByHash, removePlaylist } from '../../lib/playlists';
 import { cachePlaylist, uncachePlaylist, removeCachingPlaylist, removeUncachingPlaylist } from '../../lib/cache';
 
 export default class Playlists extends Akili.Component {
@@ -85,9 +85,10 @@ export default class Playlists extends Akili.Component {
     for(let i = 0; i < this.scope.data.length; i++) {
       let cached = 0;
       const data = this.scope.data[i];
+      const songs = getPlaylistByHash(data.hash).songs;
 
-      for(let i = 0; i < data.songs.length; i++) {
-        const song = data.songs[i];
+      for(let i = 0; i < songs.length; i++) {
+        const song = songs[i];
   
         if(titles[song.title]) {
           cached++;
@@ -96,6 +97,7 @@ export default class Playlists extends Akili.Component {
       }
 
       data.cached = cached;
+      data.songsLength = songs.length;
     }
   }
 
@@ -147,7 +149,7 @@ export default class Playlists extends Akili.Component {
   }
 
   async cachePlaylist(playlist) {
-    if(playlist.cached && playlist.cached == playlist.songs.length) {
+    if(playlist.cached && playlist.cached == playlist.songsLength) {
       return await this.removeCache(playlist);
     }
 
@@ -155,10 +157,10 @@ export default class Playlists extends Akili.Component {
   }
 
   async removeCache(playlist) {
-    await uncachePlaylist(playlist);
+    await uncachePlaylist(getPlaylistByHash(playlist.hash));
   }
 
   async addCache(playlist) {
-    await cachePlaylist(playlist);
+    await cachePlaylist(getPlaylistByHash(playlist.hash));
   }
 }

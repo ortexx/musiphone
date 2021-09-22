@@ -13,14 +13,14 @@
           <span class="ellipsis title">${ this.loopValue._title }</span>
         </tooltip>
         <a
-          hidden="${ this.loopValue.caching || this.loopValue.uncaching  || this.loopValue.cached == this.loopValue.songs.length }"
+          hidden="${ this.loopValue.caching || this.loopValue.uncaching  || this.loopValue.cached == this.loopValue.songsLength }"
           href="javascript:;" 
           on-click="${ event.stopPropagation(); this.addCache(this.loopValue) }"
         >
           <i class="fa fa-arrow-down"></i>
         </a>
         <a
-          hidden="${ this.loopValue.caching || this.loopValue.uncaching  || this.loopValue.cached != this.loopValue.songs.length }"
+          hidden="${ this.loopValue.caching || this.loopValue.uncaching  || this.loopValue.cached != this.loopValue.songsLength }"
           class="active"
           href="javascript:;" 
           on-click="${ event.stopPropagation(); this.cachePlaylist(this.loopValue) }"
@@ -28,7 +28,7 @@
           <i class="fa fa-arrow-down"></i>
         </a>
         <a
-          hidden="${ this.loopValue.caching || this.loopValue.uncaching || (!this.loopValue.cached || this.loopValue.cached == this.loopValue.songs.length) }"
+          hidden="${ this.loopValue.caching || this.loopValue.uncaching || (!this.loopValue.cached || this.loopValue.cached == this.loopValue.songsLength) }"
           href="javascript:;" 
           on-click="${ event.stopPropagation(); this.removeCache(this.loopValue) }"
         >

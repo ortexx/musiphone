@@ -35,6 +35,7 @@ removeMobileHovers();
 document.addEventListener(window.cordova? 'deviceready': 'DOMContentLoaded', async () => {
   try {  
     if(window.cordova) {
+      window.open = window.cordova.InAppBrowser.open;
       window.cordova.plugins.backgroundMode.enable();  
       window.cordova.plugins.backgroundMode.on('activate', () => {
         cordova.plugins.backgroundMode.disableWebViewOptimizations();

@@ -2,6 +2,8 @@
 
 Musiphone is a decentralized music player based on [the museria project](https://github.com/ortexx/museria/).
 
+There is [an article here](https://ortex.medium.com/musiphone-a-decentralized-music-player-6b30ffe4d788) with an explanation. 
+
 ```javascript
 const Node = require('musiphone').Node;
 
