@@ -3,7 +3,6 @@ import store from 'akili/src/services/store';
 import utils from 'akili/src/utils';
 import clientStorage from '../client-storage';
 import client from '../client';
-import qs from 'querystring';
 import base64url from 'base64url';
 
 const maxPlaylists = 15;
@@ -252,9 +251,9 @@ export async function parsePlaylistLink(link) {
     return '';
   }
 
-  const details = (info.path + '').split('/');
+  const details = (info.pathname + '').split('/');
   details.shift();
-
+  
   if(details[0] === 'musiphone' && details.length == 2) {
     return details[1];
   }
@@ -360,11 +359,7 @@ export function parsePlaylist(text) {
     
     try {
       const info = new URL(line);
-
-      if(info.query) {
-        const query = qs.parse(info.query);
-        query.title && !songTitle && (songTitle = query.title);
-      }
+      info.searchParams.has('title') && !songTitle && (songTitle = info.searchParams.get('title'));
     }
     catch(err) { null }
     
