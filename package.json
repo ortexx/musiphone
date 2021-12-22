@@ -1,6 +1,6 @@
 {
   "name": "musiphone",
-  "version": "0.2.26",
+  "version": "0.2.27",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
@@ -13,7 +13,7 @@
   "homepage": "https://github.com/ortexx/musiphone",
   "scripts": {
     "eslint": "eslint src bin test",
-    "test": "mocha ./test/index.js --timeout=10000",
+    "test": "mocha ./test/index.js --timeout=30000",
     "commit-code": "npm run eslint && npm run test",
     "commit-browser": "npm run build-client-prod && npm run build-face-prod",
     "commit-mobile": "npm run release-mobile && npm run release-mobile-prod",
@@ -93,7 +93,8 @@
     "mocha": "^8.2.1",
     "node-polyfill-webpack-plugin": "^1.1.0",
     "resolve-url-loader": "^3.1.2",
-    "sass-loader": "^11.0.0",
+    "sass-loader": "^12.3.0",
+    "sass": "^1.4.0",
     "terser-webpack-plugin": "^5.0.0",
     "webpack": "^5.31.2",
     "webpack-cli": "^4.6.0"
@@ -101,18 +102,18 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
     "@shopify/draggable": "^1.0.0-beta.12",
-    "akili": "^1.2.18",
+    "akili": "^1.2.19",
     "base64url": "^3.0.1",
     "bytes": "^3.1.0",
     "express": "^4.17.1",
     "express-static-search": "^0.1.7",
     "lodash": "^4.17.19",
-    "metastocle": "^0.2.23",
-    "museria": "^0.2.36",
+    "metastocle": "^0.2.27",
+    "museria": "^0.2.43",
     "serve-favicon": "^2.5.0",
     "slugify": "^1.4.6",
     "smooth-scrollbar": "^8.5.3",
-    "spreadable": "^0.2.19",
+    "spreadable": "^0.2.23",
     "tippy.js": "^6.2.7"
   },
   "cordova": {

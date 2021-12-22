@@ -324,6 +324,7 @@ export function comparePlaylists(first, second) {
 export function parsePlaylist(text) {
   const lines = text.split('\n').filter(l => l.trim());
   const songs = [];
+  const titles = {};
   let title = '';
   let lastSongTitle = '';
   let prevIsInf = false;
@@ -363,11 +364,12 @@ export function parsePlaylist(text) {
     }
     catch(err) { null }
     
-    if(!songTitle || !clientStorage.constructor.utils.isSongTitle(songTitle)) {
+    if(!songTitle || titles[songTitle] || !clientStorage.constructor.utils.isSongTitle(songTitle)) {
       continue;
     }
 
-    songs.push(createSongInfo(songTitle));      
+    songs.push(createSongInfo(songTitle));  
+    titles[songTitle] = true;
   }
 
   return { title, songs };

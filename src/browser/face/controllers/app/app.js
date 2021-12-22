@@ -1,6 +1,7 @@
 import './app.scss';
 import Akili from 'akili';
 import slugify from 'slugify';
+import uniqBy from 'lodash/uniqBy';
 import router from 'akili/src/services/router';
 import store from 'akili/src/services/store';
 import utils from 'akili/src/utils';
@@ -445,7 +446,10 @@ export default class App extends Akili.Component {
     const timeout = setTimeout(() => this.scope.isSongFinding = true, 100);
 
     try {
-      const songs = await clientStorage.findSongs(this.scope.searchInputValue, { limit: 5 });  
+      const songs = await clientStorage.findSongs(this.scope.searchInputValue, { 
+        limit: 5, 
+        signal: this.findingRequestController.signal 
+      });  
       clearTimeout(timeout);
       this.findingRequestController = null; 
       this.scope.isSongFinding = false;
@@ -455,7 +459,7 @@ export default class App extends Akili.Component {
       if(songs.length) {
         this.scope.searchEvent.status = 'success';
         this.scope.searchEvent.message = '';
-        this.scope.searchEvent.meta.songs = songs;
+        this.scope.searchEvent.meta.songs = uniqBy(songs, 'title');
         this.scope.searchEvent.meta.songs.forEach(s => s.isActive = store.activeSong && store.activeSong.title == s.title);
       }
     }

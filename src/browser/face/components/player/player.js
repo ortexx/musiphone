@@ -14,8 +14,9 @@ export default class Player extends Akili.Component {
     Akili.component('player', this);
   }
 
-  created() {
-    this.media = null;   
+  created() {    
+    this.media = null; 
+    this.mediaList = [];
     this.scope.progress = 0;
     this.scope.buffer = 0;
     this.volume = 0.75;
@@ -60,7 +61,7 @@ export default class Player extends Akili.Component {
 
   removed() {
     window.removeEventListener('scroll', this.handlePlayerPosition);
-    document.body.removeEventListener('keyup', this.listenBodyKeyup);    
+    document.body.removeEventListener('keyup', this.listenBodyKeyup);
   }
 
   setPlayerVisibility(val) {
@@ -396,13 +397,36 @@ export default class Player extends Akili.Component {
   }
 
   async loadSrcMobile(song) {
-    let media; 
+    let media;
     const result = await new Promise((resolve, reject) => {      
-      media = this.media = new Media(song.audioLinkCache || song.audioLink, () => {}, (err) => {
+      media = this.media = new Media(song.audioLinkCache || song.audioLink, () => this.releaseMediaMobile(media), (err) => {
+        this.releaseMediaMobile(media);
         err.code !== 0? reject(new Error(err.message || 'Wrong audio file')): resolve(false);
       }, (status) => {
+        clearTimeout(this.mobileReleaseTimeout);
+        this.mobileReleaseTimeout = setTimeout(() => {
+          for(let i = this.mediaList.length - 1; i >= 0; i--) {
+            const media = this.mediaList[i];
+
+            if(!media.__released) {
+              continue;
+            }
+
+            media.release();
+            this.mediaList.splice(i, 1);
+          }
+
+          if(this.scope.isPlaying && this.media.__released) {
+            store.activeSong = song;
+          }
+          else if(!this.scope.isPlaying && media !== this.media) {
+            this.mediaList.push(media);
+            this.media.play();
+          }
+        }, 1000);
+
         if(media.__releasing || media.__released) {
-          media.stop();
+          status < 3 && media.stop();
           return;
         }
 
@@ -422,6 +446,7 @@ export default class Player extends Akili.Component {
           resolve(media.__resolved = true);
         }
       });
+      this.mediaList.push(media);
       media.__delayTimeout = setTimeout(() => {
         if(!media.__resolved) {
           this.releaseMediaMobile(media);
@@ -468,7 +493,7 @@ export default class Player extends Akili.Component {
           if(!this.isMobileLoaded) {
             return;
           }
-  
+
           const parsed = JSON.parse(action);
           const message = parsed.message;
   
