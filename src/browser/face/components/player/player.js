@@ -399,7 +399,7 @@ export default class Player extends Akili.Component {
   async loadSrcMobile(song) {
     let media;
     const result = await new Promise((resolve, reject) => {      
-      media = this.media = new Media(song.audioLinkCache || song.audioLink, () => this.releaseMediaMobile(media), (err) => {
+      media = this.media = new Media(song.audioLinkCache || song.audioLink, () => {}, (err) => {
         this.releaseMediaMobile(media);
         err.code !== 0? reject(new Error(err.message || 'Wrong audio file')): resolve(false);
       }, (status) => {
