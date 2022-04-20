@@ -403,6 +403,10 @@ export default class Player extends Akili.Component {
         this.releaseMediaMobile(media);
         err.code !== 0? reject(new Error(err.message || 'Wrong audio file')): resolve(false);
       }, (status) => {
+        /**
+         * Probable bug handling
+         * @link https://github.com/apache/cordova-plugin-media/issues/299
+        */ 
         clearTimeout(this.mobileReleaseTimeout);
         this.mobileReleaseTimeout = setTimeout(() => {
           for(let i = this.mediaList.length - 1; i >= 0; i--) {
@@ -420,7 +424,6 @@ export default class Player extends Akili.Component {
             store.activeSong = song;
           }
           else if(!this.scope.isPlaying && media !== this.media) {
-            this.mediaList.push(media);
             this.media.play();
           }
         }, 1000);
@@ -453,7 +456,7 @@ export default class Player extends Akili.Component {
           reject(new Error('Audio loading timeout'));
         }        
       }, this.audioDelayTimeout);
-      this.play();
+      this.play();      
     });
 
     if(result === false) {

@@ -19,7 +19,7 @@ import {
  * @returns {string}
  */
 export function createCacheSongTitle(title) {
-  return `${ btoa(encodeURIComponent(title).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1))) }.mp3`;
+  return `${ btoa(encodeURIComponent(title).replace(/%([0-9A-F]{2})/g, (m, p) => String.fromCharCode('0x' + p))).replace(/\//g, '_') }.mp3`;
 }
 
 /**
@@ -29,7 +29,15 @@ export function createCacheSongTitle(title) {
  * @returns {string}
  */
 export function parseCacheSongTitle(title) {
-  return decodeURIComponent(atob(title.split('.')[0]).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+  const text = atob(title.split('.')[0].replace(/_/g, '/'));
+  const length = text.length;
+  const bytes = new Uint8Array(length);
+
+  for (let i = 0; i < length; i++) {
+    bytes[i] = text.charCodeAt(i);
+  }
+  
+  return new TextDecoder().decode(bytes);
 }
 
 /**

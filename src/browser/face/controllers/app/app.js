@@ -468,6 +468,10 @@ export default class App extends Akili.Component {
       this.findingRequestController = null; 
       this.scope.isSongFinding = false;
 
+      if(err.code == 20) {
+        return;
+      }
+
       if(!err.code) {
         return store.event = { err };
       }
