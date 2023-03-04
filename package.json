@@ -1,6 +1,6 @@
 {
   "name": "musiphone",
-  "version": "0.2.29",
+  "version": "0.2.30",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
@@ -73,7 +73,7 @@
     "cordova-plugin-file": "^6.0.2",
     "cordova-plugin-file-transfer": "github:apache/cordova-plugin-file-transfer",
     "cordova-plugin-inappbrowser": "^5.0.0",
-    "cordova-plugin-media": "^5.0.3",
+    "cordova-plugin-media": "^6.0.0",
     "cordova-plugin-music-controls2": "^3.0.5",
     "cordova-plugin-splashscreen": "^6.0.0",
     "cordova-plugin-whitelist": "^1.3.5",
@@ -90,7 +90,7 @@
     "html-loader": "^2.1.2",
     "husky": "^4.3.7",
     "mini-css-extract-plugin": "^1.3.9",
-    "mocha": "^9.2.0",
+    "mocha": "^10.2.0",
     "node-polyfill-webpack-plugin": "^1.1.0",
     "resolve-url-loader": "^5.0.0",
     "sass-loader": "^12.3.0",
@@ -102,18 +102,18 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
     "@shopify/draggable": "^1.0.0-beta.12",
-    "akili": "^1.2.21",
+    "akili": "^1.2.22",
     "base64url": "^3.0.1",
     "bytes": "^3.1.0",
     "express": "^4.17.1",
     "express-static-search": "^0.1.7",
     "lodash": "^4.17.19",
-    "metastocle": "^0.2.29",
-    "museria": "^0.2.45",
+    "metastocle": "^0.2.32",
+    "museria": "^0.2.48",
     "serve-favicon": "^2.5.0",
     "slugify": "^1.4.6",
     "smooth-scrollbar": "^8.5.3",
-    "spreadable": "^0.2.26",
+    "spreadable": "^0.2.28",
     "tippy.js": "^6.2.7"
   },
   "cordova": {

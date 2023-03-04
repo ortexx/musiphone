@@ -54,14 +54,14 @@ export default class Player extends Akili.Component {
     this.elAudio.addEventListener('pause', () => this.scope.isPlaying = false);
     this.elAudio.addEventListener('ended', this.onMusicEnd.bind(this));
     this.handlePlayerPosition = utils.debounce(this.calculatePlayerPosition.bind(this), this.calculationDebounce);
-    this.listenBodyKeyup = this.keyboardControl.bind(this);
-    document.body.addEventListener('keyup', this.listenBodyKeyup);
+    this.listenBodyKey = this.keyboardControl.bind(this);
+    document.body.addEventListener('keydown', this.listenBodyKey);
     window.addEventListener('scroll', this.handlePlayerPosition);
   }
 
   removed() {
     window.removeEventListener('scroll', this.handlePlayerPosition);
-    document.body.removeEventListener('keyup', this.listenBodyKeyup);
+    document.body.removeEventListener('keydown', this.listenBodyKey);
   }
 
   setPlayerVisibility(val) {
@@ -106,6 +106,12 @@ export default class Player extends Akili.Component {
     
     if(event.code == "ArrowDown") {
       this.pause();
+    }
+
+    if(event.code == 'Space') {
+      event.stopPropagation();
+      event.preventDefault();
+      this.scope.isPlaying? this.pause(): this.play();      
     }
   }
 

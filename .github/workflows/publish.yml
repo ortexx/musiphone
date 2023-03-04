@@ -18,7 +18,8 @@ jobs:
         uses: android-actions/setup-android@v2 
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 16
+      - run: npm install -g npm
       - run: npm ci
       - run: npm ddp
       - run: npm run build-ci
