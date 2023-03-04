@@ -99,14 +99,6 @@ export default class Player extends Akili.Component {
     if(event.code == "ArrowLeft") {
       return this.setPrevSong();
     }
-    
-    if(event.code == "ArrowUp") {
-      return this.play();
-    }
-    
-    if(event.code == "ArrowDown") {
-      this.pause();
-    }
 
     if(event.code == 'Space') {
       event.stopPropagation();
