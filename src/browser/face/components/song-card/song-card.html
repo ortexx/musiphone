@@ -6,7 +6,8 @@
         <img 
           url='${ this.info.coverLinkCache || this.info.coverLink }'
           hidden-error="true"
-          loading="viewport"
+          loading="chunk"
+          chunk-size="3"
         >
       </div>
       <div class="py-1 px-3 card-info">

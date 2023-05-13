@@ -39,20 +39,22 @@ export async function handleDeepLinks(uri) {
  * @returns boolean
  */
 export async function checkConnection() {
-  try {
-    await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      const url = location.hostname == 'localhost' || location.protocol == 'file:'? `http://httpbin.org/get`: location.origin;
-      xhr.open('HEAD', url, true);
-      xhr.onload = resolve;
-      xhr.onerror = reject;
-      xhr.send();
-    });
-    return true;
+  if(!window.cordova) {
+    return navigator.onLine;
   }
-  catch(err) {
-    return false;
-  } 
+  else {
+    const networkState = navigator.connection.type;
+    const states = {};
+    states[window.Connection.UNKNOWN] = false;
+    states[window.Connection.ETHERNET] = true;
+    states[window.Connection.WIFI] = true;
+    states[window.Connection.CELL_2G] = true;
+    states[window.Connection.CELL_3G] = true;
+    states[window.Connection.CELL_4G] = true;
+    states[window.Connection.CELL] = true;
+    states[window.Connection.NONE] = false;
+    return states[networkState];
+  }
 }
 
 /**

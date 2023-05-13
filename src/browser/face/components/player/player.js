@@ -486,7 +486,7 @@ export default class Player extends Akili.Component {
         track: parts[1],
         artist: parts[0],
         dismissable: false,
-        cover: song.coverLink,
+        cover: network.connection? song.coverLink: undefined,
         hasPrev: true,
         hasNext: true
       }, () => {
