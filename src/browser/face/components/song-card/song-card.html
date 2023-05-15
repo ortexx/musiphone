@@ -6,7 +6,7 @@
         <img 
           url='${ this.info.coverLinkCache || this.info.coverLink }'
           hidden-error="true"
-          loading="chunk"
+          loading="${ this.networkConnection? 'chunk': 'viewport' }"
           chunk-size="3"
         >
       </div>

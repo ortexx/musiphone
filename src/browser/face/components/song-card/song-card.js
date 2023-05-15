@@ -45,6 +45,7 @@ export default class SongCard extends Akili.Component {
   }
 
   compiled() {
+    this.store('networkConnection', 'networkConnection');
     this.attr('info', 'info');
     this.attr('buttons', this.setButtonsStatus);
   }

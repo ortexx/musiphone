@@ -1,6 +1,7 @@
 import router from 'akili/src/services/router';
 import { parsePlaylistLink } from './playlists';
 import client from '../client';
+import store from 'akili/src/services/store';
 import { initClients, setClientInitialAddress } from './system';
 
 const network = {};
@@ -66,6 +67,7 @@ export async function listenConnectionStatus() {
   const fn = async () => {
     const prev = network.connection;
     network.connection = await checkConnection();
+    store.networkConnection = network.connection;
 
     if(prev !== undefined && prev !== network.connection && network.connection && !client.workerAddress) {
       const address = await setClientInitialAddress(); 

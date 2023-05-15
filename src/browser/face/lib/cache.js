@@ -290,10 +290,16 @@ export async function setCacheMobile() {
   const files = await readdir(cordova.file.externalCacheDirectory);
 
   for (let i = 0; i < files.length; i++) {
-    const title = parseCacheSongTitle(files[i].name);
+    const file = files[i];
+
+    if(!file.isFile) {
+      continue;
+    }
+
+    const title = parseCacheSongTitle(file.name);
     
     try {
-      addCache(title, await getSongCacheInfoFromEntry(files[i]));
+      addCache(title, await getSongCacheInfoFromEntry(file));
     }
     catch(err) {
       //eslint-disable-next-line no-console
