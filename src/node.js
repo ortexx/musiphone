@@ -12,7 +12,7 @@ module.exports = (Parent) => {
     static get codename () { return pack.name }
     static get ServerTransport () { return ServerExpressMuseria }
 
-     /**
+    /**
      * @see NodeMetastocle
      * @param {string|string[]} [options.musicStorageAddress]
      */

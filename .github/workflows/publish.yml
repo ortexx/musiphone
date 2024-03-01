@@ -16,10 +16,10 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2 
-      - uses: actions/setup-node@v1
+        uses: android-actions/setup-android@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
       - run: npm install -g npm
       - run: npm ci
       - run: npm ddp

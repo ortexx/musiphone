@@ -18,6 +18,8 @@ import network, { handleDeepLinks, listenConnectionStatus } from './lib/network'
 import { setCache, cleanUpCache } from './lib/cache';
 import { initDatabase } from './lib/database';
 
+removeMobileHovers();
+
 App.define();
 SongCard.define();
 Menu.define();
@@ -30,7 +32,6 @@ Scrollbar.define();
 ModalWindow.define();
 
 initDataStorage();
-removeMobileHovers();
 
 document.addEventListener(window.cordova? 'deviceready': 'DOMContentLoaded', async () => {
   try {  

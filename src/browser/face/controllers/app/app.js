@@ -124,7 +124,7 @@ export default class App extends Akili.Component {
     this.store('event', this.handleEvent);
     this.store('playlists', this.handlePlaylists);
     this.store('activePlaylist', this.handleActivePlaylist);    
-     const isExternal = isExternalHash(store.activePlaylist.hash);
+    const isExternal = isExternalHash(store.activePlaylist.hash);
 
     if(this.transition.data) {
       !isExternal && await this.postPlaylist(store.activePlaylist);

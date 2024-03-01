@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [18.x]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: webfactory/ssh-agent@v0.5.2
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -21,9 +21,9 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2  
+        uses: android-actions/setup-android@v3  
       - name: Run tests with ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install -g npm

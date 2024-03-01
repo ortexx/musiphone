@@ -66,25 +66,23 @@ export function initDataStorage(session = false) {
 /**
  * Remove all hover styles for mobile
  */
-export function removeMobileHovers() {
-  if(!window.cordova) {
-    return;
-  }
-    
-  const ignore = /[^,]*:hover/i;
+export function removeMobileHovers() {    
+  if('ontouchstart' in document.documentElement) {
+    for(let i = document.styleSheets.length - 1; i >= 0; i--) {
+      let sheet = document.styleSheets[i];
 
-  for (let i = 0; i < document.styleSheets.length; i++) {
-    const sheet = document.styleSheets[i];
-
-    if (!sheet.cssRules) {
-      continue;
-    }
-
-    for (let j = sheet.cssRules.length - 1; j >= 0; j--) {
-      const rule = sheet.cssRules[j];
+      if(!sheet.cssRules) {
+        return;
+      }
       
-      if (rule.type === CSSRule.STYLE_RULE && ignore.test(rule.selectorText)) {      
-        sheet.deleteRule(j);
+      for(let k = sheet.cssRules.length - 1; k >= 0; k--) {
+        let rule = sheet.cssRules[k];
+
+        if(!rule.selectorText) {
+          continue;
+        }
+
+        rule.selectorText = rule.selectorText.replace(":hover", ":active");
       }
     }
   }
