@@ -73,7 +73,7 @@
     "cordova-plugin-file": "^8.0.1",
     "cordova-plugin-file-transfer": "^2.0.0",
     "cordova-plugin-inappbrowser": "^5.0.0",
-    "cordova-plugin-media": "^6.0.0",
+    "cordova-plugin-media": "^7.0.0",
     "cordova-plugin-music-controls2": "^3.0.7",
     "cordova-plugin-network-information": "^3.0.0",
     "cordova-plugin-x-socialsharing-android12": "^6.0.5",
