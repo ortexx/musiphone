@@ -113,7 +113,7 @@
     "serve-favicon": "^2.5.0",
     "slugify": "^1.4.6",
     "smooth-scrollbar": "^8.5.3",
-    "spreadable": "^0.2.32",
+    "spreadable": "0.2.32",
     "tippy.js": "^6.2.7"
   },
   "overrides": {
