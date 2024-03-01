@@ -116,6 +116,9 @@
     "spreadable": "^0.2.32",
     "tippy.js": "^6.2.7"
   },
+  "overrides": {
+    "spreadable": "0.2.32"
+  },
   "cordova": {
     "plugins": {
       "cordova-plugin-media": {},
