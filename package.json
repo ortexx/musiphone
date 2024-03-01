@@ -71,6 +71,7 @@
     "cordova-plugin-background-mode": "^0.7.3",
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-file": "^8.0.1",
+    "cordova-plugin-file-transfer": "^2.0.0",
     "cordova-plugin-inappbrowser": "^5.0.0",
     "cordova-plugin-media": "^6.0.0",
     "cordova-plugin-music-controls2": "^3.0.7",
@@ -103,7 +104,6 @@
     "akili": "^1.2.24",
     "base64url": "^3.0.1",
     "bytes": "^3.1.0",
-    "cordova-plugin-file-transfer": "^2.0.0",
     "express": "^4.17.1",
     "express-static-search": "^0.1.7",
     "lodash": "^4.17.19",
@@ -121,7 +121,6 @@
   "cordova": {
     "plugins": {
       "cordova-plugin-media": {},
-      "cordova-plugin-splashscreen": {},
       "cordova-plugin-background-mode": {},
       "cordova-webintent": {},
       "cordova-plugin-device": {},
@@ -130,7 +129,8 @@
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-network-information": {},
       "cordova-plugin-x-socialsharing-android12": {},
-      "cordova-plugin-music-controls2": {}
+      "cordova-plugin-music-controls2": {},
+      "cordova-plugin-file": {}
     },
     "platforms": [
       "android"
