@@ -1,1 +1,2 @@
-module.exports = Object.assign({}, require('metastocle/bin/utils'));
+import utils from "metastocle/bin/utils.js";
+export default Object.assign({}, utils);

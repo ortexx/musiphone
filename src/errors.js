@@ -1,1 +1,2 @@
-module.exports = Object.assign({}, require('metastocle/src/errors'));
+import errors from 'metastocle/src/errors.js';
+export default Object.assign({}, errors);

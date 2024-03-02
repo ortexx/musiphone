@@ -1,11 +1,12 @@
 {
   "name": "musiphone",
-  "version": "0.2.33",
+  "version": "0.3.1",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
     "musiphone": "./bin/index.js"
   },
+  "type": "module",
   "author": {
     "name": "Alexander Balasyan",
     "email": "mywebstreet@gmail.com"
@@ -29,8 +30,8 @@
     "build-ci": "npm run commit-code && npm run commit-browser && npm run commit-mobile",
     "copy-mobile": "cross-env cp platforms/android/app/build/outputs/apk/debug/app-debug.apk dist/android/musiphone.debug.apk",
     "copy-mobile-prod": "cross-env cp platforms/android/app/build/outputs/bundle/release/app-release.aab dist/android/musiphone.release.aab",
-    "release-mobile": "npm run cordova-init && cordova build --prod && npm run copy-mobile",
-    "release-mobile-prod": "npm run cordova-init && cordova build --prod --release && npm run copy-mobile-prod",
+    "release-mobile": "node hb.cjs && npm run cordova-init && cordova build --prod && npm run copy-mobile && node ha.cjs",
+    "release-mobile-prod": "node hb.cjs && npm run cordova-init && cordova build --prod --release && npm run copy-mobile-prod && node ha.cjs",
     "make-mobile": "npm run build-mobile-prod && npm run release-mobile",
     "make-mobile-prod": "npm run build-mobile-prod && npm run release-mobile-prod",
     "run-mobile": "npm run make-mobile && cordova run",
@@ -59,14 +60,16 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.13.15",
-    "@babel/eslint-parser": "^7.13.14",
-    "babel-loader": "^8.2.2",
-    "babel-preset-akili": "^2.0.7",
+    "@babel/core": "^7.23.7",
+    "@babel/eslint-parser": "^7.23.3",
+    "@babel/plugin-transform-runtime": "^7.23.7",
+    "@babel/preset-env": "^7.23.8",
+    "babel-loader": "^9.1.3",
+    "babel-preset-akili": "^2.0.8",
     "chai": "^4.2.0",
     "copy-webpack-plugin": "^6.4.1",
     "cordova": "^12.0.0",
-    "cordova-android": "^12.0.0",
+    "cordova-android": "^12.0.1",
     "cordova-plugin-androidx": "^2.0.0",
     "cordova-plugin-background-mode": "^0.7.3",
     "cordova-plugin-device": "^2.0.3",
@@ -79,44 +82,42 @@
     "cordova-plugin-x-socialsharing-android12": "^6.0.5",
     "cordova-webintent": "github:cordova-misc/cordova-webintent",
     "cross-env": "^7.0.3",
-    "css-loader": "^5.2.1",
-    "css-minimizer-webpack-plugin": "^3.0.2",
+    "css-loader": "^6.9.0",
+    "css-minimizer-webpack-plugin": "^5.0.1",
     "cssnano": "^5.0.6",
     "es6-promise-plugin": "^4.2.2",
-    "eslint": "^7.24.0",
-    "eslint-webpack-plugin": "^2.5.3",
-    "file-loader": "^6.2.0",
-    "html-loader": "^2.1.2",
+    "eslint": "^8.56.0",
+    "eslint-webpack-plugin": "^4.0.1",
+    "html-loader": "^5.0.0",
     "husky": "^4.3.7",
     "mini-css-extract-plugin": "^1.3.9",
     "mocha": "^10.2.0",
-    "node-polyfill-webpack-plugin": "^1.1.0",
+    "node-polyfill-webpack-plugin": "^3.0.0",
     "resolve-url-loader": "^5.0.0",
-    "sass": "^1.4.0",
-    "sass-loader": "^12.3.0",
-    "terser-webpack-plugin": "^5.0.0",
-    "webpack": "^5.31.2",
-    "webpack-cli": "^4.6.0"
+    "sass": "^1.69.7",
+    "sass-loader": "^14.0.0",
+    "terser-webpack-plugin": "^5.3.10",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.1",
+    "@fortawesome/fontawesome-free": "^6.5.1",
     "@shopify/draggable": "1.0.0-beta.12",
-    "akili": "^1.2.24",
+    "akili": "^1.2.37",
     "base64url": "^3.0.1",
+    "bootstrap": "^5.0.0",
     "bytes": "^3.1.0",
     "express": "^4.17.1",
     "express-static-search": "^0.1.7",
-    "lodash": "^4.17.19",
-    "metastocle": "^0.2.32",
-    "museria": "^0.2.49",
+    "lodash-es": "^4.17.21",
+    "metastocle": "~0.3.10",
+    "museria": "~0.3.4",
     "serve-favicon": "^2.5.0",
     "slugify": "^1.4.6",
     "smooth-scrollbar": "^8.5.3",
-    "spreadable": "0.2.32",
-    "tippy.js": "^6.2.7"
-  },
-  "overrides": {
-    "spreadable": "0.2.32"
+    "spreadable": "~0.3.10",
+    "tippy.js": "^6.2.7",
+    "yargs": "^17.7.2"
   },
   "cordova": {
     "plugins": {
@@ -132,9 +133,7 @@
       "cordova-plugin-music-controls2": {},
       "cordova-plugin-file": {}
     },
-    "platforms": [
-      "android"
-    ]
+    "platforms": []
   },
   "repository": {
     "type": "git",

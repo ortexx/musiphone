@@ -1,7 +1,7 @@
 /**
  * Get the storage address
  */
-module.exports.getStorageAddress = node => {
+export const getStorageAddress = node => {
   return async (req, res, next) => {
     try {
       res.send({ address: node.options.musicStorageAddress });

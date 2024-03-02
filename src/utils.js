@@ -1,4 +1,5 @@
-const mtUtils = require('metastocle/src/utils');
+import mtUtils from 'metastocle/src/utils.js';
+
 const utils = Object.assign({}, mtUtils);
 
 /**
@@ -15,4 +16,4 @@ utils.isPlaylistTitle = function (title) {
   return true;
 };
 
-module.exports = utils;
+export default utils;

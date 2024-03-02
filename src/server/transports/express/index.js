@@ -1,8 +1,10 @@
-const ServerExpressMetastocle = require('metastocle/src/server/transports/express')();
-const routes = require('./routes');
-const routesClient = require('./client/routes');
+import serverExpressMetastocle from 'metastocle/src/server/transports/express/index.js';
+import routes from './routes.js';
+import routesClient from './client/routes.js';
 
-module.exports = (Parent) => {
+const ServerExpressMetastocle = serverExpressMetastocle();
+
+export default (Parent) => {
   return class ServerExpressMuseria extends (Parent || ServerExpressMetastocle) {
    /**
      * @see ServerExpressMetastocle.prototype.getMainRoutes

@@ -1,7 +1,7 @@
-const controllers = require('./controllers');
-const midds = require('../midds');
+import * as controllers from './controllers.js';
+import midds from '../midds.js';
 
-module.exports = [
+export default [
   /**
    * Get the storage address
    * 

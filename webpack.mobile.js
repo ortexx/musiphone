@@ -1,9 +1,11 @@
-const argv = require('yargs').argv;
-const webpack = require('webpack');
-const utils = require('./bin/utils');
-const config = require('./webpack.face.js');
+import yargs from 'yargs';
+import webpack from 'webpack';
+import utils from './bin/utils.js';
+import config from './webpack.face.js';
+ 
+const argv = yargs(process.argv).argv;
 
-module.exports = (options = {}, wp) => {
+export default (options = {}, wp) => {
   let apiAddress = options.apiAddress || argv.apiAddress || process.env.MUSIPHONE_API_ADDRESS;
 
   try {

@@ -1,10 +1,11 @@
+import path from 'path';
+import merge from 'lodash/merge.js';
+import spWebpackConfig from 'spreadable/webpack.common.js';
+import CopyPlugin from 'copy-webpack-plugin';
 
-const path = require('path');
-const merge = require('lodash/merge');
-const spWebpackConfig = require('spreadable/webpack.common.js');
-const CopyPlugin = require('copy-webpack-plugin');
+const __dirname = new URL('.', import.meta.url).pathname;
 
-module.exports = (options = {}, wp) => {
+export default (options = {}, wp) => {
   const copyPatterns = [
     'index.html', 
     'nocover.png', 

@@ -1,16 +1,17 @@
 import './app.scss';
 import Akili from 'akili';
 import slugify from 'slugify';
-import uniqBy from 'lodash/uniqBy';
-import router from 'akili/src/services/router';
-import store from 'akili/src/services/store';
-import utils from 'akili/src/utils';
-import { saveTextToFile, blobTo, getDownloadFolder } from '../../lib/files';
-import { cleanUpCache } from '../../lib/cache';
-import clientStorage from '../../client-storage';
-import network, { getLocationOrigin } from '../../lib/network';
-import { checkApiAddress } from '../../lib/system';
-import { getPlaylist, getExternalPlaylist, addPlaylist as postPlaylist } from '../../actions/playlists';
+import uniqBy from 'lodash-es/uniqBy.js';
+import router from 'akili/src/services/router.js';
+import store from 'akili/src/services/store.js';
+import utils from 'akili/src/utils.js';
+import { saveTextToFile, blobTo, getDownloadFolder } from '../../lib/files.js';
+import { cleanUpCache } from '../../lib/cache.js';
+import clientStorage from '../../client-storage.js';
+import network, { getLocationOrigin } from '../../lib/network.js';
+import { checkApiAddress } from '../../lib/system.js';
+import { getPlaylist, getExternalPlaylist, addPlaylist as postPlaylist } from '../../actions/playlists.js';
+import template from './app.html';
 import { 
   addSong, 
   addPlaylist,
@@ -25,10 +26,10 @@ import {
   parsePlaylistLink,
   comparePlaylists,
   findPlaylist
-} from '../../lib/playlists';
+} from '../../lib/playlists.js';
 
 export default class App extends Akili.Component {
-  static template = require('./app.html');
+  static template = template;
 
   static define() {
     Akili.component('app', this);

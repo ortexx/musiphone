@@ -1,8 +1,9 @@
 import './modal-window.scss'
 import Akili from 'akili';
+import template from './modal-window.html';
 
 export default class ModalWindow extends Akili.Component {
-  static template = require('./modal-window.html');
+  static template = template;
   static events = ['open', 'close'];
 
   static define() {

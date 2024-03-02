@@ -1,8 +1,8 @@
-import store from 'akili/src/services/store';
-import utils from 'akili/src/utils';
-import clientStorage from '../client-storage';
-import { getDatabase } from './database';
-import { getPlaylistByHash } from './playlists';
+import store from 'akili/src/services/store.js';
+import utils from 'akili/src/utils.js';
+import clientStorage from '../client-storage.js';
+import { getDatabase } from './database.js';
+import { getPlaylistByHash } from './playlists.js';
 import {
   download, 
   readdir, 
@@ -10,7 +10,7 @@ import {
   resolveFileSystem, 
   fileEntryToFile,
   blobTo
-} from './files';
+} from './files.js';
 
 /**
  * Create a title for the cached song filename
@@ -341,7 +341,6 @@ export async function downloadCacheSong(song) {
 export async function downloadCacheSongMobile(song) {
   return await download(song.audioLink, createCacheSongPath(song.title));
 }
-
 
 /**
  * For browser

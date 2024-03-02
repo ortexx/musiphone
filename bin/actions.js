@@ -1,7 +1,10 @@
-const chalk = require('chalk');
-const argv = require('yargs').argv;
-const utils = require('./utils');
-const actions = Object.assign({}, require('metastocle/bin/actions'));
+import chalk from "chalk";
+import yargs from "yargs";
+import utils from "./utils.js";
+import _actions from "metastocle/bin/actions.js";
+
+const argv = yargs(process.argv).argv;
+const actions = Object.assign({}, _actions);
 
 /**
  * Add the playlist
@@ -46,4 +49,4 @@ actions.exportPlaylists = async node => {
   console.log(chalk.cyan('The playlists have been exported'));
 };
 
-module.exports = actions;
+export default actions;

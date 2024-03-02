@@ -52,7 +52,7 @@
       </div>
       <button 
         type="submit"
-        class="btn form-control btn-primary"
+        class="btn form-control btn-primary mt-3"
         disabled="${ this.isCheckingApiAddress }"
       >
         Confirm <i hidden="${ !this.isCheckingApiAddress }" class="fas fa-circle-notch fa-spin"></i>
@@ -81,7 +81,7 @@
         </div>
       </a>
     </div>
-    <div class="col-2 col-md-8 col-xl-9 p-0 pl-4 text-right">
+    <div class="col-2 col-md-8 col-xl-9 p-0 ps-4 text-right">
       <div class="d-flex flex-row-reverse align-items-center">
         <a 
           href="javascript:;" 
@@ -197,7 +197,7 @@
                   new playlist
                 </button>
               </div>  
-              <div class="col-6 pl-2">
+              <div class="col-6 ps-2">
                 <modal-window 
                   body-class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4"
                   is-open="${ this.loadPlaylistModal }"
@@ -220,7 +220,7 @@
                     </div> 
                     <button 
                       type="submit"
-                      class="btn form-control btn-primary"
+                      class="btn form-control btn-primary mt-3"
                       disabled="${ this.isPlaylistLoading }"
                     >
                       Confirm <i hidden="${ !this.isPlaylistLoading }" class="fas fa-circle-notch fa-spin"></i>
@@ -274,7 +274,7 @@
                     </div> 
                     <button 
                       type="submit"
-                      class="btn form-control btn-secondary"
+                      class="btn form-control btn-secondary mt-3"
                       disabled="${ this.isPlaylistSaving }"
                     >
                       Confirm <i hidden="${ !this.isPlaylistSaving }" class="fas fa-circle-notch fa-spin"></i>
@@ -285,7 +285,7 @@
                   Save to web
                 </button>
               </div>  
-              <div class="col-6 pl-2">
+              <div class="col-6 ps-2">
                 <button class="btn form-control btn-lg btn-secondary" on-click="${ this.saveFile() }"> 
                   Save to file
                 </button>  
@@ -315,7 +315,7 @@
             <div class="text-center">
               <img src="./img/hint.svg" class="playlist-hints-img">
             </div>            
-            <span class="playlist-hints-text py-4 px-2 px-lg-0 pl-lg-4">
+            <span class="playlist-hints-text py-4 px-2 px-lg-0 ps-lg-4">
               You have an empty playlist. To fill it you need to look for a song in the input. 
               If the desired song is found, then a new section will appear and you can click the plus button to add it to the playlist.
               If the song is not there, then you can upload it to the <a href="${ this.storageUrl }" target="_blank">music storage</a> yourself.

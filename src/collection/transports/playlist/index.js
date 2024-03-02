@@ -1,15 +1,18 @@
-const util = require('util');
-const zlib = require('zlib');
-const crypto = require('crypto');
-const bytes = require('bytes');
-const Collection = require('metastocle/src/collection/transports/collection')();
-const utils = require('../../../utils');
-const schema = require('../../../schema');
-const errors = require('../../../errors');
+import util from 'util';
+import zlib from 'zlib';
+import crypto from 'crypto';
+import bytes from 'bytes';
+import collection from 'metastocle/src/collection/transports/collection/index.js';
+import utils from '../../../utils.js';
+import schema from '../../../schema.js';
+import errors from '../../../errors.js';
+
 const deflate = util.promisify(zlib.deflate);
 const inflate = util.promisify(zlib.inflate);
 
-module.exports = (Parent) => {
+const Collection = collection();
+
+export default  (Parent) => {
   /**
    * Playlist collection transport
    */

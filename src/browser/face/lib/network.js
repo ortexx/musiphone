@@ -1,8 +1,8 @@
-import router from 'akili/src/services/router';
-import { parsePlaylistLink } from './playlists';
-import client from '../client';
-import store from 'akili/src/services/store';
-import { initClients, setClientInitialAddress } from './system';
+import router from 'akili/src/services/router.js';
+import { parsePlaylistLink } from './playlists.js';
+import client from '../client.js';
+import store from 'akili/src/services/store.js';
+import { initClients, setClientInitialAddress } from './system.js';
 
 const network = {};
 

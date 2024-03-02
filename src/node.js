@@ -1,12 +1,16 @@
-const _ = require('lodash');
-const NodeMetastocle = require('metastocle/src/node')();
-const CollectionMusiphone = require('./collection/transports/playlist')();
-const ServerExpressMuseria = require('./server/transports/express')();
-const utils = require('./utils');
-const schema = require('./schema');
-const pack = require('../package.json');
+import _ from 'lodash-es';
+import nodeMetastocle from 'metastocle/src/node.js';
+import collectionMusiphone from './collection/transports/playlist/index.js';
+import serverExpressMusiphone from './server/transports/express/index.js';
+import schema from "./schema.js";
+import utils from "./utils.js";
+import pack from "../package.json" with { type: "json" };
 
-module.exports = (Parent) => {  
+const NodeMetastocle = nodeMetastocle();
+const ServerExpressMuseria = serverExpressMusiphone();
+const CollectionMusiphone = collectionMusiphone();
+
+export default (Parent) => {  
   return class NodeMusiphone extends (Parent || NodeMetastocle) {
     static get version () { return pack.version }
     static get codename () { return pack.name }

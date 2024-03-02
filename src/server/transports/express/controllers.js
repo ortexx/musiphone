@@ -1,25 +1,27 @@
-const favicon = require('serve-favicon');
-const expressStatic = require('express-static-search');
-const path = require('path');
+import faviconLib from 'serve-favicon';
+import expressStatic from 'express-static-search';
+import path from 'path';
+
+const __dirname = new URL('.', import.meta.url).pathname;
 
 /**
  * Server index page handler
  */
-module.exports.indexPage = () => {
+export const indexPage = () => {
   return (req, res) => res.sendFile(path.resolve(__dirname, '../../../browser/face/index.html'));
 };
 
 /**
  * Server favicon handler
  */
-module.exports.favicon = () => {
-  return favicon(path.resolve(__dirname, '../../../browser/face/favicon.png'));
+export const favicon = () => {
+  return faviconLib(path.resolve(__dirname, '../../../browser/face/favicon.png'));
 };
 
 /**
  * Server static handler
  */
-module.exports.static = (node, options) => {
+export const staticFn = (node, options) => {
   options = Object.assign({
     beforeSend: (res) => {
       res.setHeader('Cache-Control', `public, max-age=${ node.options.server.staticMaxAge / 1000 }`);
@@ -27,3 +29,5 @@ module.exports.static = (node, options) => {
   }, options)
   return expressStatic(path.resolve(__dirname, '../../../../dist/face'), options);
 };
+
+export { staticFn as static };

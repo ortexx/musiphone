@@ -1,11 +1,11 @@
-import request from 'akili/src/services/request';
-import client from '../client';
+import request from 'akili/src/services/request.js';
+import client from '../client.js';
 import { 
   preparePlaylistToShow, 
   getPlaylistLinkFromExternalHash, 
   parsePlaylist, 
   createPlaylistLink 
-} from '../lib/playlists';
+} from '../lib/playlists.js';
 
 /**
  * Get the external playlist

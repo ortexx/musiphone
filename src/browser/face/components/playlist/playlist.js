@@ -1,14 +1,17 @@
 import './playlist.scss'
 import Akili from 'akili';
-import store from 'akili/src/services/store';
-import utils from 'akili/src/utils';
-import { removeSong } from '../../lib/playlists';
-import { checkSelection } from '../../lib/system';
-import { downloadCacheSong, removeCacheSong, hasCache, trimCacheFromSong } from '../../lib/cache';
-import Sortable from '@shopify/draggable/lib/sortable';
+import store from 'akili/src/services/store.js';
+import utils from 'akili/src/utils.js';
+import { removeSong } from '../../lib/playlists.js';
+import { checkSelection } from '../../lib/system.js';
+import { downloadCacheSong, removeCacheSong, hasCache, trimCacheFromSong } from '../../lib/cache.js';
+import sortable from '@shopify/draggable/lib/sortable.js';
+import template from './playlist.html';
+
+const Sortable = sortable.default;
 
 export default class Playlist extends Akili.Component {
-  static template = require('./playlist.html');
+  static template = template;
   static events = ['sort'];
 
   static define() {

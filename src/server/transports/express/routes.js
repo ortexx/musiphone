@@ -1,7 +1,7 @@
-const midds = require('./midds');
-const controllers = require('./controllers');
+import midds from './midds.js';
+import * as controllers from './controllers.js';
 
-module.exports = [
+export default [
   { name: 'favicon', fn: controllers.favicon },
   { name: 'static', url: '/', fn: controllers.static },
   { name: 'indexPage', method: 'get', url: '*', fn: [midds.networkAccess, controllers.indexPage] }

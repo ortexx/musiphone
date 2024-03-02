@@ -1,1 +1,1 @@
-module.exports = require('metastocle/bin/runner');
+export { default } from "metastocle/bin/runner.js";

@@ -1,9 +1,10 @@
 import './menu.scss'
 import Akili from 'akili';
-import store from 'akili/src/services/store';
+import store from 'akili/src/services/store.js';
+import template from './menu.html';
 
 export default class Menu extends Akili.Component {
-  static template = require('./menu.html');
+  static template = template;
 
   static define() {
     Akili.component('menu', this);

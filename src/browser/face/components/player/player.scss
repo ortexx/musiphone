@@ -139,6 +139,7 @@
 
   &-volume {
     position: relative;
+    line-height: 0;
     $size: 0.8em;
   
     & input[type='range'] { 

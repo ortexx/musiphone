@@ -1,8 +1,7 @@
-import request from 'akili/src/services/request';
-import client from '../client';
-import clientStorage from '../client-storage';
-import ClientMusiphone from '../../../../dist/client/musiphone.client.js';
-import network from './network';
+import request from 'akili/src/services/request.js';
+import client from '../client.js';
+import clientStorage from '../client-storage.js';
+import network from './network.js';
 
 /**
  * Initialize the client initial address
@@ -27,7 +26,7 @@ export async function setClientInitialAddress() {
  */
 export function getApiAddress() {
   if(!window.cordova) {
-    return ClientMusiphone.getPageAddress();
+    return window.ClientMusiphone.getPageAddress();
   }
 
   return typeof API_ADDRESS !== 'undefined'? API_ADDRESS: localStorage.getItem('apiAddress');

@@ -1,9 +1,10 @@
-const ClientMetastocle = require('metastocle/src/client')();
-const utils = require('./utils');
-const errors = require('./errors');
-const pack = require('../package.json');
+import clientMetastocle from 'metastocle/src/client.js';
+import utils from './utils.js';
+import errors from './errors.js';
+import pack from "../package.json" with { type: "json" };
+const ClientMetastocle = clientMetastocle(); 
 
-module.exports = (Parent) => {
+export default (Parent) => {
   return class ClientMusiphone extends (Parent || ClientMetastocle) {
     static get version () { return pack.version }
     static get codename () { return pack.name }

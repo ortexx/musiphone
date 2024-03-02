@@ -1,5 +1,5 @@
 import Akili from 'akili';
-import utils from 'akili/src/utils';
+import utils from 'akili/src/utils.js';
 
 export default class Scroller extends Akili.Component {
   static events = ['border'];

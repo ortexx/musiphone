@@ -1,6 +1,7 @@
 /node_modules
 /plugins/
 /platforms/
+*~
 
 *.log
 *.bat

@@ -1,11 +1,12 @@
 import './playlists.scss'
 import Akili from 'akili';
-import store from 'akili/src/services/store';
-import { getPlaylistByHash, removePlaylist } from '../../lib/playlists';
-import { cachePlaylist, uncachePlaylist, removeCachingPlaylist, removeUncachingPlaylist } from '../../lib/cache';
+import store from 'akili/src/services/store.js';
+import { getPlaylistByHash, removePlaylist } from '../../lib/playlists.js';
+import { cachePlaylist, uncachePlaylist, removeCachingPlaylist, removeUncachingPlaylist } from '../../lib/cache.js';
+import template from './playlists.html';
 
 export default class Playlists extends Akili.Component {
-  static template = require('./playlists.html');
+  static template = template;
   static events = ['select'];
 
   static define() {

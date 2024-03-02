@@ -1,8 +1,8 @@
 
-import store from 'akili/src/services/store';
-import utils from 'akili/src/utils';
-import clientStorage from '../client-storage';
-import client from '../client';
+import store from 'akili/src/services/store.js';
+import utils from 'akili/src/utils.js';
+import clientStorage from '../client-storage.js';
+import client from '../client.js';
 import base64url from 'base64url';
 
 const maxPlaylists = 15;

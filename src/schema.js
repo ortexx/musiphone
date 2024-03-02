@@ -1,6 +1,7 @@
-const mtSchema = require('metastocle/src/schema');
-const maUtils = require('museria/src/utils');
-const utils = require('./utils');
+import mtSchema from 'metastocle/src/schema.js';
+import maUtils from'museria/src/utils.js';
+import utils from './utils.js';
+
 const schema = Object.assign({}, mtSchema);
 
 schema.getPlaylist = function () {
@@ -58,4 +59,4 @@ schema.getPlaylistCollectionGetting = function () {
   }
 };
 
-module.exports = schema;
+export default schema;

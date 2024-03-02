@@ -14,9 +14,9 @@
   src: url("../fonts/open-sans.ttf")
 }
 
-* {
+*, ul, ol, dl {
   padding: 0;
-  margin: 0; 
+  margin: 0;
 }
 
 body {
@@ -50,14 +50,27 @@ a {
   font-weight: bold;
   font-size: 1.1em;
   height: 2.61em;
+  color: white;
 
   &:focus, &:active {
     outline: none !important;
     box-shadow: none !important;
+    color: white;
   }  
+
+  &:hover {
+    color: white;
+  }
 
   &[disabled] {
     cursor: not-allowed;
+    color: white;
+  }
+}
+
+input.form-control {
+  &::placeholder {
+    color: $gray;
   }
 }
 

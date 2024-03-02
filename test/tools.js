@@ -1,5 +1,5 @@
-const _tools = Object.assign({}, require('metastocle/test/tools'));
-const tools =  Object.assign({}, _tools);
+import mtTools from 'metastocle/test/tools.js';
+const tools =  Object.assign({}, mtTools);
 
 /**
  * Create the node options
@@ -9,9 +9,9 @@ const tools =  Object.assign({}, _tools);
  * @returns {object}
  */
 tools.createNodeOptions = async function (options = {}) {
-  options = await _tools.createNodeOptions(options);
+  options = await mtTools.createNodeOptions(options);
   options.musicStorageAddress = 'localhost:1';
   return options;
 };
 
-module.exports = tools;
+export default tools;
