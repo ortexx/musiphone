@@ -11,12 +11,14 @@ export default (options = {}, wp) => {
   let apiAddress = options.apiAddress || argv.apiAddress || process.env.MUSIPHONE_API_ADDRESS;
 
   try {
-    apiAddress = require(utils.getAbsolutePath(apiAddress));
+    if(apiAddress) {
+      apiAddress = require(utils.getAbsolutePath(apiAddress));
+    }    
   }
   catch(err) {
     console.warn(err);
   };
-  
+
   if(apiAddress) {
     typeof apiAddress == 'string' && (apiAddress = apiAddress.split(','));
     const plugins = [new webpack.DefinePlugin({ API_ADDRESS: JSON.stringify(apiAddress) })];
