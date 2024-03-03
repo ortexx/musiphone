@@ -5,51 +5,47 @@ Musiphone is a decentralized music player based on [the museria project](https:/
 There is [an article here](https://ortex.medium.com/musiphone-a-decentralized-music-player-6b30ffe4d788) with an explanation. 
 
 ```javascript
-const Node = require('musiphone').Node;
-
-(async () => {  
-  try {
-    const node = new Node({
-      port: 4000,
-      hostname: 'localhost',
-      musicStorageAddress: 'storage.museria.com:80'
-    });
-    await node.init();
-  }
-  catch(err) {
-    console.error(err.stack);
-    process.exit(1);
-  }
-})();
+import { Node } from 'musiphone';
+ 
+try {
+  const node = new Node({
+    port: 4000,
+    hostname: 'localhost',
+    musicStorageAddress: 'storage.museria.com:80'
+  });
+  await node.init();
+}
+catch(err) {
+  console.error(err.stack);
+  process.exit(1);
+}
 ```
 
 ```javascript
-const Client = require('musiphone').Client;
+import { Client } from 'musiphone';
+ 
+try {
+  const client = new Client({
+    address: 'localhost:4000'
+  });
+  await client.init();    
+  const title = 'Playlist title';
+  const songs = [
+    'Onycs - Eden',
+    'Onycs - Shine',
+    'Onycs - Timeless'      
+  ];
 
-(async () => {  
-  try {
-    const client = new Client({
-      address: 'localhost:4000'
-    });
-    await client.init();    
-    const title = 'Playlist title';
-    const songs = [
-      'Onycs - Eden',
-      'Onycs - Shine',
-      'Onycs - Timeless'      
-    ];
+  // Add the playlist
+  const response = await client.addPlaylist(title, songs);
 
-    // Add the playlist
-    const response = await client.addPlaylist(title, songs);
-
-    // Get the playlist
-    const playlist = await client.getPlaylist(response.hash);
-  }
-  catch(err) {
-    console.error(err.stack);
-    process.exit(1);
-  }
-})();
+  // Get the playlist
+  const playlist = await client.getPlaylist(response.hash);
+}
+catch(err) {
+  console.error(err.stack);
+  process.exit(1);
+}
 ```
 
 ## Browser client
