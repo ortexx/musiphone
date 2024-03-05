@@ -1,6 +1,6 @@
 {
   "name": "musiphone",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
@@ -111,11 +111,11 @@
     "express-static-search": "^0.1.7",
     "lodash-es": "^4.17.21",
     "metastocle": "~0.3.10",
-    "museria": "~0.3.4",
+    "museria": "~0.3.5",
     "serve-favicon": "^2.5.0",
     "slugify": "^1.4.6",
     "smooth-scrollbar": "^8.5.3",
-    "spreadable": "~0.3.10",
+    "spreadable": "~0.3.11",
     "tippy.js": "^6.2.7",
     "yargs": "^17.7.2"
   },
@@ -140,6 +140,6 @@
     "url": "https://github.com/ortexx/musiphone"
   },
   "engines": {
-    "node": ">=10.13.0"
+    "node": ">=20.0.0"
   }
 }
