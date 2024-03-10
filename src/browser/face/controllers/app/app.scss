@@ -187,4 +187,24 @@
       margin-top: 0;
     }
   }
+
+  & .invalid-hash {
+    position: relative;
+    display: block;
+    padding-right: 3em;
+
+    & .btn-close {
+      position: absolute;
+      right: 1em;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9em;
+      outline: none;
+
+      &:focus, &:active {
+        outline: none;
+        box-shadow: none;
+      }
+    }
+  }
 }

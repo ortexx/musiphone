@@ -327,17 +327,15 @@
         </div>
       </if>
     </if>
-    <if is="${ this.wrongPlaylistHash }" class="d-block search-alert alert alert-danger">
+    <if is="${ this.wrongPlaylistHash }" class="d-block search-alert alert alert-danger invalid-hash">
       There is no valid playlist with that hash
       <a state="app">
         <button 
           type="button" 
-          class="close"
-          data-dismiss="alert" 
-          aria-label="Close" 
+          class="btn-close btn-close-white"
           on-click="${ this.resetSearchEvent(); this.searchInputValue = '';  this.searchInputFocus = true; }"
+          aria-label="Close"
         >
-          <span aria-hidden="true">&times;</span>
         </button>
       </a>      
     </if>
