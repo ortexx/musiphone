@@ -17,7 +17,6 @@ export default class Player extends Akili.Component {
 
   created() {    
     this.media = null; 
-    this.mediaList = [];
     this.scope.progress = 0;
     this.scope.buffer = 0;
     this.volume = 0.75;
@@ -368,9 +367,7 @@ export default class Player extends Akili.Component {
     media.__releasing = true;
     clearInterval(media.__mediaInterval);
     clearTimeout(media.__delayTimeout);
-    media.stop();
-    delete media.__releasing;
-    media.__released = true;
+    media.release();    
   }
 
   releaseMediaBrowser() {
@@ -427,33 +424,9 @@ export default class Player extends Akili.Component {
         this.releaseMediaMobile(media);
         err.code !== 0? reject(new Error(err.message || 'Wrong audio file')): resolve(false);
       }, (status) => {
-        /**
-         * Probable bug handling
-         * @link https://github.com/apache/cordova-plugin-media/issues/299
-        */ 
-        clearTimeout(this.mobileReleaseTimeout);
-        this.mobileReleaseTimeout = setTimeout(() => {
-          for(let i = this.mediaList.length - 1; i >= 0; i--) {
-            const media = this.mediaList[i];
-
-            if(!media.__released) {
-              continue;
-            }
-
-            media.release();
-            this.mediaList.splice(i, 1);
-          }
-
-          if(this.scope.isPlaying && this.media.__released) {
-            store.activeSong = song;
-          }
-          else if(!this.scope.isPlaying && media !== this.media) {
-            this.media.play();
-          }
-        }, 1000);
-
         if(media.__releasing || media.__released) {
-          status < 3 && media.stop();
+          delete media.__releasing;
+          media.__released = true;
           return;
         }
 
@@ -473,14 +446,13 @@ export default class Player extends Akili.Component {
           resolve(media.__resolved = true);
         }
       });
-      this.mediaList.push(media);
       media.__delayTimeout = setTimeout(() => {
         if(!media.__resolved) {
           this.releaseMediaMobile(media);
           reject(new Error('Audio loading timeout'));
         }        
       }, this.audioDelayTimeout);
-      this.play();      
+      media.play();      
     });
 
     if(result === false) {
@@ -488,15 +460,9 @@ export default class Player extends Akili.Component {
     }
     
     await this.setControls(song);
-    this.pause();
+    media.pause();
     this.isMobileLoaded = true;
-    media.__currentTime = 0;
-    media.__mediaInterval = setInterval(async () => {
-      this.checkProgress();
-      media.__currentTime = await new Promise((resolve) => {
-        this.media.getCurrentPosition(p => resolve(p < 0? 0: p), () => resolve(0));
-      });
-    }, 1000);   
+    media.__mediaInterval = setInterval(() => this.checkProgress(), 1000);
     return result;
   }
 

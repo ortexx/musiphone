@@ -329,9 +329,9 @@ export function parsePlaylist(text) {
   let lastSongTitle = '';
   let prevIsInf = false;
 
-  for(let i = 0; i < lines.length; i++) {    
+  for(let i = 0; i < lines.length; i++) {
     const line = lines[i];    
-    const ext = line.split(':'); 
+    const ext = line.split(/:(.*)/); 
     let songTitle = lastSongTitle;
     lastSongTitle = '';
     

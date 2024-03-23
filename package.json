@@ -1,6 +1,6 @@
 {
   "name": "musiphone",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
@@ -30,12 +30,13 @@
     "build-ci": "npm run commit-code && npm run commit-browser && npm run commit-mobile",
     "copy-mobile": "cross-env cp platforms/android/app/build/outputs/apk/debug/app-debug.apk dist/android/musiphone.debug.apk",
     "copy-mobile-prod": "cross-env cp platforms/android/app/build/outputs/bundle/release/app-release.aab dist/android/musiphone.release.aab",
-    "release-mobile": "node hb.cjs && npm run cordova-init && cordova build --prod && npm run copy-mobile && node ha.cjs",
+    "release-mobile": "node hb.cjs; npm run cordova-init && cordova build --prod && npm run copy-mobile; node ha.cjs",
     "release-mobile-prod": "node hb.cjs && npm run cordova-init && cordova build --prod --release && npm run copy-mobile-prod && node ha.cjs",
     "make-mobile": "npm run build-mobile-prod && npm run release-mobile",
     "make-mobile-prod": "npm run build-mobile-prod && npm run release-mobile-prod",
     "run-mobile": "npm run make-mobile && cordova run",
-    "run-mobile-device": "npm run make-mobile && cordova run --device"
+    "run-mobile-device": "npm run make-mobile && cordova run --device",
+    "cordova-run-device": "node hb.cjs; cordova run --device; node ha.cjs;"
   },
   "husky": {
     "hooks": {
@@ -115,7 +116,7 @@
     "serve-favicon": "^2.5.0",
     "slugify": "^1.4.6",
     "smooth-scrollbar": "^8.5.3",
-    "spreadable": "~0.3.11",
+    "spreadable": "~0.3.12",
     "tippy.js": "^6.2.7",
     "yargs": "^17.7.2"
   },
