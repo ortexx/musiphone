@@ -1,6 +1,6 @@
 {
   "name": "musiphone",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "Decentralized music player",
   "main": "./src/index.js",
   "bin": {
@@ -134,7 +134,9 @@
       "cordova-plugin-music-controls2": {},
       "cordova-plugin-file": {}
     },
-    "platforms": []
+    "platforms": [
+      "android"
+    ]
   },
   "repository": {
     "type": "git",
