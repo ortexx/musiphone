@@ -459,6 +459,7 @@ export default class Player extends Akili.Component {
       return result;
     }
     
+    media.pause();
     await this.setControls(song);
     this.isMobileLoaded = true;
     media.__currentTime = 0;
@@ -517,7 +518,7 @@ export default class Player extends Akili.Component {
   
         MusicControls.listen();
         resolve();
-      }, reject);   
+      }, reject);
     });
   }
 
